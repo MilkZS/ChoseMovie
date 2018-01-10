@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ChoseMovie</string>
+
+    <!-- main Ui menu item -->
+    <string name="main_ui_item_popular">按流行热度排列</string>
+    <string name="main_ui_item_top_rate">按评分高低排列</string>
+
+    <!-- used to show info on child activity -->
+    <string name="movie_name">电影名称</string>
+    <string name="movie_poster">电影海报</string>
+    <string name="movie_over_view">剧情简介</string>
+    <string name="movie_vote">用户评分</string>
+    <string name="movie_publish_date">发布日期</string>
+</resources>
