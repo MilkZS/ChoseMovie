@@ -28,10 +28,6 @@ public class MovieInfo implements Serializable {
         this.id = id;
     }
 
-    public void setPath(String path){
-        this.path = path;
-    }
-
     public String getId(){
         return id;
     }

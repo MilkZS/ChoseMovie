@@ -15,6 +15,7 @@ import org.json.JSONObject;
 
 public class OpenMovieInfoJson {
 
+    private String TAG = "OpenMovieInfoJson";
 
     public static OpenMovieInfoJson openMovieInfoJson;
 
@@ -42,14 +43,14 @@ public class OpenMovieInfoJson {
     /**
      * get data from json
      *
-     * @param jsonString
-     * @return
+     * @param jsonString json read from themoviedb.org
+     * @return the object of MovieInfo
      * @throws JSONException
      */
     public MovieInfo[] getDataFromMovieJson(String jsonString) throws JSONException {
 
         MovieInfo[] movieData;
-        Log.d("=====================>","http ------>" + jsonString);
+        Log.d(TAG,"jsonString read from themoviedb.org is : " + jsonString);
         JSONObject movieJson = new JSONObject(jsonString);
         JSONArray movieArray = movieJson.getJSONArray(QUERY);
         JSONObject jsonObject ;
@@ -75,14 +76,4 @@ public class OpenMovieInfoJson {
         }
         return movieData;
     }
-
-    public String getPrevueDataFromMovieJson(String jsonString) throws JSONException {
-
-        String movieData;
-        JSONObject movieJson = new JSONObject(jsonString);
-        movieData = movieJson.toString();
-
-        return movieData;
-    }
-
 }

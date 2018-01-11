@@ -51,7 +51,7 @@ public class NetWorkUtils {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "Built URI " + url);
+        Log.d(TAG, "Built URI : " + url);
         return url;
     }
     public static URL buildUrlForPopular(int chose){
@@ -67,6 +67,7 @@ public class NetWorkUtils {
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setConnectTimeout(10000);
         try {
             InputStream in = urlConnection.getInputStream();
 

@@ -29,8 +29,8 @@ public class ChildActivity extends AppCompatActivity {
             movieInfo = (MovieInfo) intent.getSerializableExtra(BaseDataInfo.CLASS_PASS);
         }
 
-        String sBackPath = movieInfo.getPath_back();
-        Picasso.with(this).load(sBackPath).into(showSinglePic);
+        String sPopularPath = movieInfo.getPath_back();
+        Picasso.with(this).load(sPopularPath).into(showSinglePic);
         String showText = "\n\n\t" + getResources().getString(R.string.movie_name)
                 + " :\t" + movieInfo.getTitle() + "\n\n\n"
                 + "\t" + getResources().getString(R.string.movie_over_view)
@@ -38,7 +38,7 @@ public class ChildActivity extends AppCompatActivity {
                 + "\t"+ getResources().getString(R.string.movie_vote)
                 + " :\t" + movieInfo.getVoteAver() + "\n\n\n"
                 + "\t" + getResources().getString(R.string.movie_publish_date)
-                + " :\t" + movieInfo.getPubDate();
+                + " :\t" + movieInfo.getPubDate() + "\n\n\n";
         nameText.append(showText);
 
     }

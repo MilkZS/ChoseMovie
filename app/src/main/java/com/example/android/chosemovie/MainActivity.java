@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
 import com.example.android.chosemovie.data.BaseDataInfo;
+import com.example.android.chosemovie.utility.MovieSearchTask;
 import com.example.android.chosemovie.utility.NetWorkUtils;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 
@@ -28,7 +29,7 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieClickHandle{
 
-    private String TAG = "MainActivity";
+    private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
 
     private final int spanCount = 3;
@@ -38,8 +39,6 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle{
     private PicRecAdapter imageAdapter;
     private ProgressBar progressBar;
     private MovieSearchTask movieSearchTask;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle{
     }
 
     /**
-     * start a new AsycTask to refresh the activity by new sort
+     * start a new AsyncTask to refresh the activity by new sort
      *
      * @param choseMode sort mode
      */
@@ -70,13 +69,13 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle{
             if(movieSearchTask != null){
                 movieSearchTask.cancel(true);
             }
-            movieSearchTask = new MovieSearchTask();
+            movieSearchTask = new MovieSearchTask(progressBar,imageAdapter,openMovieInfoJson);
             movieSearchTask.execute(POPULAR_MODE);
         }else if(choseMode == RATE_DATA_MODE){
             if(movieSearchTask != null){
                 movieSearchTask.cancel(true);
             }
-            movieSearchTask = new MovieSearchTask();
+            movieSearchTask = new MovieSearchTask(progressBar,imageAdapter,openMovieInfoJson);
             movieSearchTask.execute(RATE_DATA_MODE);
         }
     }
@@ -89,86 +88,6 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle{
         startActivity(intent);
         // Toast.makeText(this,sId,Toast.LENGTH_SHORT).show();
     }
-
-    class MovieSearchTask extends AsyncTask<Integer,Void ,MovieInfo[]> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected MovieInfo[] doInBackground(Integer... choseMode) {
-
-            if(choseMode.length == 0){
-                return null;
-            }
-
-            URL url = NetWorkUtils.buildUrlForPopular(choseMode[0]);
-            String sJsonData ;
-            MovieInfo[] movieData = null;
-            try {
-                sJsonData = NetWorkUtils.getResponseFromHttpUrl(url);
-                movieData = openMovieInfoJson.getDataFromMovieJson(sJsonData);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return movieData;
-        }
-
-        @Override
-        protected void onPostExecute(MovieInfo[] movieData) {
-            if(movieData != null){
-                progressBar.setVisibility(View.INVISIBLE);
-                imageAdapter.setData(movieData);
-            }
-        }
-    }
-
-    class PrevueMovieTask extends AsyncTask<Integer,Void ,String>{
-
-
-        String sId;
-
-        public PrevueMovieTask(String sId){
-            this.sId = sId;
-        }
-
-        @Override
-        protected String doInBackground(Integer... integers) {
-            if (integers.length == 0) {
-                return null;
-            }
-
-            URL url = NetWorkUtils.buildUrlForPopular(integers[0],sId);
-            String sJsonData;
-            String s = null;
-            try {
-                sJsonData = NetWorkUtils.getResponseFromHttpUrl(url);
-                s = openMovieInfoJson.getPrevueDataFromMovieJson(sJsonData);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return s;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if(s != null){
-
-                Log.d(TAG,"path id ---->" + s);
-            }
-        }
-    }
-
-   public void showPrevueMovie(String sId) throws IOException {
-       new PrevueMovieTask(sId).execute(PicRecAdapter.ID_MODE);
-   }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
