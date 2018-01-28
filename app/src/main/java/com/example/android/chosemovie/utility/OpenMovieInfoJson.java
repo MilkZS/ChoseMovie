@@ -3,6 +3,7 @@ package com.example.android.chosemovie.utility;
 import android.util.Log;
 
 import com.example.android.chosemovie.base.MovieInfo;
+import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 
 import org.json.JSONArray;
@@ -16,10 +17,12 @@ import org.json.JSONObject;
 public class OpenMovieInfoJson {
 
     private String TAG = "OpenMovieInfoJson";
+    private boolean DBG = true;
 
     public static OpenMovieInfoJson openMovieInfoJson;
 
     private MovieInfo movieInfo;
+    private MovieReviews movieReviews;
     private OpenMovieInfoJson(){
     }
 
@@ -40,8 +43,12 @@ public class OpenMovieInfoJson {
     private String VOTE_AVERAGE = "vote_average";
     private String RELEASE_DATE = "release_date";
 
+    private String REVIEWS_AUTHOR = "author";
+    private String REVIEWS_CONTENT = "content";
+
     /**
-     * get data from json
+     * Analysis the jsonData from NetWorkUtils.getResponseFromHttpUrl
+     * @see NetWorkUtils
      *
      * @param jsonString json read from themoviedb.org
      * @return the object of MovieInfo
@@ -50,7 +57,7 @@ public class OpenMovieInfoJson {
     public MovieInfo[] getDataFromMovieJson(String jsonString) throws JSONException {
 
         MovieInfo[] movieData;
-        Log.d(TAG,"jsonString read from themoviedb.org is : " + jsonString);
+        if (DBG) Log.d(TAG,"jsonString read from themoviedb.org is : " + jsonString);
         JSONObject movieJson = new JSONObject(jsonString);
         JSONArray movieArray = movieJson.getJSONArray(QUERY);
         JSONObject jsonObject ;
@@ -75,5 +82,30 @@ public class OpenMovieInfoJson {
             movieData[i] = movieInfo;
         }
         return movieData;
+    }
+
+    /**
+     * Get detail messages about Reviews
+     *
+     * @param jsonString json string of detail message
+     * @return object array
+     * @throws JSONException
+     */
+    public MovieReviews[] getMovieReviews(String jsonString) throws JSONException {
+
+        if (DBG) Log.d(TAG, "++++++jsonData++++++++ === > " + jsonString);
+        MovieReviews[] movieReviewsArr;
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONArray jsonArray = jsonObject.getJSONArray(QUERY);
+        movieReviewsArr = new MovieReviews[jsonArray.length()];
+        JSONObject jsonSingleObject;
+        for (int i=0;i<jsonArray.length();i++) {
+            jsonSingleObject = jsonArray.getJSONObject(i);
+            String author = jsonSingleObject.getString(REVIEWS_AUTHOR);
+            String content = jsonSingleObject.getString(REVIEWS_CONTENT);
+            movieReviews = new MovieReviews(author,content);
+            movieReviewsArr[i] = movieReviews;
+        }
+        return movieReviewsArr;
     }
 }

@@ -42,7 +42,7 @@ public class MovieSearchTask extends AsyncTask<Integer, Void, MovieInfo[]> {
             return null;
         }
 
-        URL url = NetWorkUtils.buildUrlForPopular(choseMode[0]);
+        URL url = NetWorkUtils.buildUrlForDifSort(choseMode[0]);
         String sJsonData;
         MovieInfo[] movieData = null;
         try {

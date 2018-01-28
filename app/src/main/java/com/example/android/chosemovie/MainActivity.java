@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle{
     /**
      * start a new AsyncTask to refresh the activity by new sort
      *
+     * choseMode : 0 -> popular
+     *             1 -> rate data
+     *
      * @param choseMode sort mode
      */
     public void refreshMode(int choseMode){

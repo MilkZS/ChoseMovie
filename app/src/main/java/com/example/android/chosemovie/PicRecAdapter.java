@@ -22,9 +22,10 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
     private MovieInfo[] mData;
     private Context context;
     /* 0:sort by popular  1:sort by rate data  the default sort is by popular */
-    public static int POPULAR_MODE = 0;
-    public static int RATE_DATE_MODE = 1;
-    public static int ID_MODE = 2;
+    public final static int POPULAR_MODE = 0;
+    public final static int RATE_DATE_MODE = 1;
+    public final static int ID_VIDEO = 2;
+    public final static int ID_REVIEWS = 3;
 
     MovieClickHandle movieClickHandle;
 
@@ -71,7 +72,6 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
 
         @Override
         public void onClick(View v) {
-
             int adapterLocation = getAdapterPosition();
             movieInfo = mData[adapterLocation];
             movieClickHandle.onClick(movieInfo);

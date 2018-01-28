@@ -20,7 +20,8 @@
                 android:id="@+id/show_single_picture"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true" />
+                android:adjustViewBounds="true"
+                android:onClick="test"/>
 
             <TextView
                 android:id="@+id/show_name_picture"

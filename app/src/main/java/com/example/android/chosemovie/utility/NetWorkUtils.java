@@ -1,8 +1,10 @@
 package com.example.android.chosemovie.utility;
 
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.example.android.chosemovie.PicRecAdapter;
 import com.example.android.chosemovie.data.BaseDataInfo;
 
 import java.io.IOException;
@@ -18,7 +20,11 @@ import java.util.Scanner;
 
 public class NetWorkUtils {
 
-    final static String TAG = "MetWorkUtils";
+    private final static String TAG = "MetWorkUtils";
+    private final static int POPULAR_MODE = PicRecAdapter.POPULAR_MODE;
+    private final static int RATE_DATA_MODE = PicRecAdapter.RATE_DATE_MODE;
+    private final static int ID_VIDEO = PicRecAdapter.ID_VIDEO;
+    private final static int ID_REVIEWS = PicRecAdapter.ID_REVIEWS;
 
     /**
      * build the URL for themoviedb.org
@@ -26,18 +32,21 @@ public class NetWorkUtils {
      * @param chose number to chose the sort method
      * @return the URL of chose
      */
-    public static URL buildUrlForPopular(int chose,String sID){
+    public static URL buildUrlForDifSort(int chose,String sID){
 
         String sBaseSearchQuery = null;
         switch (chose){
-            case 0:{
+            case POPULAR_MODE:{
                 sBaseSearchQuery = BaseDataInfo.searchQueryPopularFromDB;
             }break;
-            case 1:{
+            case RATE_DATA_MODE:{
                 sBaseSearchQuery = BaseDataInfo.searchQueryTopRateFromDB;
             }break;
-            case 2:{
+            case ID_VIDEO:{
                 sBaseSearchQuery = sID + BaseDataInfo.VIDEO;
+            }break;
+            case ID_REVIEWS:{
+                sBaseSearchQuery = sID + BaseDataInfo.REVIEWS;
             }break;
         }
 
@@ -54,8 +63,8 @@ public class NetWorkUtils {
         Log.d(TAG, "Built URI : " + url);
         return url;
     }
-    public static URL buildUrlForPopular(int chose){
-        return buildUrlForPopular(chose,null);
+    public static URL buildUrlForDifSort(int chose){
+        return buildUrlForDifSort(chose,null);
     }
 
     /**
@@ -65,6 +74,7 @@ public class NetWorkUtils {
      * @return The contents of the HTTP response.
      * @throws IOException Related to network and stream reading
      */
+    @Nullable
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setConnectTimeout(10000);
