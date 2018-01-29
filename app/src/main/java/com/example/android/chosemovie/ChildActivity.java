@@ -53,10 +53,10 @@ public class ChildActivity extends AppCompatActivity {
 
     public void test(View view){
         Toast.makeText(this,"click",Toast.LENGTH_SHORT).show();
-        if (movieDetailSearchTask == null ){
-            movieDetailSearchTask = new MovieDetailSearchTask(movieInfo.getId(),openMovieInfoJson);
-            movieDetailSearchTask.execute(PicRecAdapter.ID_VIDEO);
-        }
+       // if (movieDetailSearchTask == null ){
+            movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson);
+            movieDetailSearchTask.execute(movieInfo.getId());
+      //  }
 
 
     }
