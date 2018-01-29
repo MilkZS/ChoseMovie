@@ -68,6 +68,21 @@ public class NetWorkUtils {
     }
 
     /**
+     * build uri for youtube search
+     *
+     * @param sKey video key
+     * @return youtube uri
+     */
+    public static Uri buildUrlForYoutube(String sKey){
+
+        Uri builtUri = Uri.parse(BaseDataInfo.youtubeBaseUrl).buildUpon()
+                .appendQueryParameter(BaseDataInfo.youtubeVideo,sKey)
+                .build();
+
+        return builtUri;
+    }
+
+    /**
      * This method returns the entire result from the HTTP response.
      *
      * @param url The URL to fetch the HTTP response from.

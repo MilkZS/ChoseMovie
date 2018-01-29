@@ -17,6 +17,10 @@ public class BaseDataInfo {
     public static String CLASS_PASS = "MovieInfo";
     public static String VIDEO = "/videos";
 
+    /** youtube */
+    public static String youtubeBaseUrl = "https://www.youtube.com/watch";
+    public static String youtubeVideo = "v";
+
     /**  the private api_key of themoviedb.org   */
     public  static String myPrivateKey = "b2cf1b074a9c5fd6be1d9eca9d05ddd2";
 
