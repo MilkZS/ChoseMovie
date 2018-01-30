@@ -22,6 +22,6 @@ public class BaseDataInfo {
     public static String youtubeVideo = "v";
 
     /**  the private api_key of themoviedb.org   */
-    public  static String myPrivateKey = "b2cf1b074a9c5fd6be1d9eca9d05ddd2";
+    public  static String myPrivateKey = "";
 
 }
