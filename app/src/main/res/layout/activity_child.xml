@@ -4,6 +4,10 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:id="@+id/test_rel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
