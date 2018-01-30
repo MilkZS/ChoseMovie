@@ -3,8 +3,13 @@ package com.example.android.chosemovie;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +24,7 @@ public class ChildActivity extends AppCompatActivity {
     ImageView showSinglePic;
     TextView nameText;
     MovieInfo movieInfo;
-    MovieDetailSearchTask movieDetailSearchTask;
+    private MovieDetailSearchTask movieDetailSearchTask;
     private OpenMovieInfoJson openMovieInfoJson;
 
     @Override
@@ -37,6 +42,13 @@ public class ChildActivity extends AppCompatActivity {
         }
 
 
+        RelativeLayout relativeLayout = findViewById(R.id.test_rel);
+        movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson,relativeLayout,this);
+        movieDetailSearchTask.execute(movieInfo.getId());
+
+
+
+/*
         String sPopularPath = movieInfo.getPath_back();
         Picasso.with(this).load(sPopularPath).into(showSinglePic);
         String showText = "\n\n\t" + getResources().getString(R.string.movie_name)
@@ -48,16 +60,6 @@ public class ChildActivity extends AppCompatActivity {
                 + "\t" + getResources().getString(R.string.movie_publish_date)
                 + " :\t" + movieInfo.getPubDate() + "\n\n\n";
         nameText.append(showText);
-
-    }
-
-    public void test(View view){
-        Toast.makeText(this,"click",Toast.LENGTH_SHORT).show();
-       // if (movieDetailSearchTask == null ){
-            movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson);
-            movieDetailSearchTask.execute(movieInfo.getId());
-      //  }
-
-
+*/
     }
 }
