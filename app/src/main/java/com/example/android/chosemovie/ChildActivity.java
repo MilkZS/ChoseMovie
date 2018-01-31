@@ -37,13 +37,16 @@ public class ChildActivity extends AppCompatActivity {
         nameText = findViewById(R.id.show_name_picture);
 
         Intent intent = getIntent();
-        if(intent.hasExtra(BaseDataInfo.CLASS_PASS)){
+        if (intent.hasExtra(BaseDataInfo.CLASS_PASS)) {
             movieInfo = (MovieInfo) intent.getSerializableExtra(BaseDataInfo.CLASS_PASS);
         }
 
+        LinearLayout[] linearLayouts = new LinearLayout[3];
+        linearLayouts[0] = findViewById(R.id.show_but_first);
+        linearLayouts[1] = findViewById(R.id.show_but_second);
+        linearLayouts[2] = findViewById(R.id.show_but_third);
 
-        RelativeLayout relativeLayout = findViewById(R.id.test_rel);
-        movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson,relativeLayout,this);
+        movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson,linearLayouts , this);
         movieDetailSearchTask.execute(movieInfo.getId());
 
 
