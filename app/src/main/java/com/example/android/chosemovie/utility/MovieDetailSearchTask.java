@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.GridLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -26,26 +27,27 @@ import java.util.ArrayList;
  * Created by milkdz on 2018/1/28.
  */
 
-public class MovieDetailSearchTask extends AsyncTask<String, Void, Button[]> {
+public class MovieDetailSearchTask extends AsyncTask<String, Void, MovieTrailers> {
 
     private String TAG = "MovieDetailSearchTask";
     private boolean DBG = true;
     private OpenMovieInfoJson openMovieInfoJson;
     private final int ID_VIDEO = PicRecAdapter.ID_VIDEO;
     private final int ID_REVIEWS = PicRecAdapter.ID_REVIEWS;
-    private RelativeLayout relativeLayout;
+    private LinearLayout[] linearLayouts;
+    private LinearLayout linearLayoutChild;
     private Context context;
 
 
-    public MovieDetailSearchTask(OpenMovieInfoJson openMovieInfoJson, RelativeLayout relativeLayout,
-                                 Context context) {
+    public MovieDetailSearchTask(OpenMovieInfoJson openMovieInfoJson,
+                                 LinearLayout[] linearLayouts,Context context) {
         this.openMovieInfoJson = openMovieInfoJson;
-        this.relativeLayout = relativeLayout;
+        this.linearLayouts = linearLayouts;
         this.context = context;
     }
 
     @Override
-    protected Button[] doInBackground(String... sid) {
+    protected MovieTrailers doInBackground(String... sid) {
 
         if (sid.length == 0) {
             return null;
@@ -55,28 +57,37 @@ public class MovieDetailSearchTask extends AsyncTask<String, Void, Button[]> {
         MovieTrailers movieTrailers = getMoviesTrailers(sId);
         ArrayList<Uri> uriArrayList = movieTrailers.getTrailersUrl();
         int num = uriArrayList.size();
-        Log.d(TAG,"====> num " + num);
-        Button[] buttons = new Button[num];
-        for (int i = 0; i < num; i++) {
-            Button button = new Button(context);
-            button.setLayoutParams(new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-            String show = "Trailer " + (i + 1);
-            button.setText(show);
-            buttons[i] = button;
-        }
+        Log.d(TAG, "====> num " + num);
 
-        return null;
+
+
+        return movieTrailers;
     }
 
     @Override
-    protected void onPostExecute(Button[] movieSingleInfo) {
-        if (movieSingleInfo == null) {
+    protected void onPostExecute(MovieTrailers movieTrailers) {
+        if (movieTrailers == null) {
             return;
         }
-        for (int i=0;i<movieSingleInfo.length;i++){
-            relativeLayout.addView(movieSingleInfo[i]);
-            Log.d(TAG,"===============> movieSingleInfo[i]");
+
+        ArrayList<Uri> uriArrayList = movieTrailers.getTrailersUrl();
+        int num = uriArrayList.size();
+        for (int i = 0; i < num; i++) {
+            for (int j=0;j<3;j++){
+                if(i < num){
+                    Button button = new Button(context);
+                    button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+                    String show = "Trailer " + (i + 1);
+                    Log.d(TAG, show);
+                    button.setText(show);
+                    button.setTag(i);
+                    i++;
+                    linearLayouts[j].addView(button);
+                }else {
+                    break;
+                }
+            }
         }
     }
 
