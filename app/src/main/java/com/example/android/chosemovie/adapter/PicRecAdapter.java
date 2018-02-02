@@ -1,4 +1,4 @@
-package com.example.android.chosemovie;
+package com.example.android.chosemovie.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.android.chosemovie.R;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
 import com.squareup.picasso.Picasso;
