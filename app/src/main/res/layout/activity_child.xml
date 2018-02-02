@@ -4,38 +4,16 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <ImageView
+        android:id="@+id/show_single_picture"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:adjustViewBounds="true" />
 
-        <LinearLayout
-            android:id="@+id/show_but_first"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:orientation="vertical">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/show_but_second"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:orientation="vertical">
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/show_but_third"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:orientation="vertical">
-
-        </LinearLayout>
-    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/show_trailer"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/show_review"
@@ -51,12 +29,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/show_single_picture"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:onClick="test" />
+
 
             <TextView
                 android:id="@+id/show_name_picture"
@@ -64,7 +37,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
-
-
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/show_progress_child"
+        android:layout_width="@string/progress_width"
+        android:layout_height="@string/progress_height"
+        android:layout_gravity="center"
+        android:visibility="invisible"/>
 </LinearLayout>
