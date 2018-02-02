@@ -1,7 +1,6 @@
 package com.example.android.chosemovie;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -10,22 +9,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.android.chosemovie.adapter.PicRecAdapter;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.utility.MovieSearchTask;
-import com.example.android.chosemovie.utility.NetWorkUtils;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MovieClickHandle{
 
