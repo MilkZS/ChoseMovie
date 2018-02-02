@@ -1,4 +1,5 @@
 <resources>
+    <!-- the main activity -->
     <string name="app_name">ChoseMovie</string>
 
     <!-- main Ui menu item -->
@@ -12,11 +13,12 @@
     <string name="movie_vote">用户评分</string>
     <string name="movie_publish_date">发布日期</string>
 
-
-
+    <!-- progress -->
+    <string name="progress_width">42sp</string>
+    <string name="progress_height">42sp</string>
 
     <!-- child activity -->
-
+    <string name="activity_label">MovieDetail</string>
 
 
 
