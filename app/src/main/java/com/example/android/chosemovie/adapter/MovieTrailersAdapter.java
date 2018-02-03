@@ -57,7 +57,7 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
         public MovieTrailersHolder(View itemView) {
             super(itemView);
             button = itemView.findViewById(R.id.button_trailers);
-            button.setLayoutParams(layoutParams);
+            //button.setLayoutParams(layoutParams);
         }
 
         public void bindData(int position) {

@@ -57,11 +57,6 @@ public class ChildActivity extends AppCompatActivity {
             movieInfo = (MovieInfo) intent.getSerializableExtra(BaseDataInfo.CLASS_PASS);
         }
 
-        LinearLayout[] linearLayouts = new LinearLayout[3];
-        linearLayouts[0] = findViewById(R.id.show_but_first);
-        linearLayouts[1] = findViewById(R.id.show_but_second);
-        linearLayouts[2] = findViewById(R.id.show_but_third);
-
         movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson, movieReviewsAdapter,
                 movieTrailersAdapter);
         movieDetailSearchTask.execute(movieInfo.getId());
