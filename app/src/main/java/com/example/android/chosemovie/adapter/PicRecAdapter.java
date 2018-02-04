@@ -27,6 +27,7 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
     public final static int RATE_DATE_MODE = 1;
     public final static int ID_VIDEO = 2;
     public final static int ID_REVIEWS = 3;
+    public final static int FAVORITE_MODE = 4;
 
     MovieClickHandle movieClickHandle;
 
