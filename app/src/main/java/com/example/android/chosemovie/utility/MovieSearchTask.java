@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.example.android.chosemovie.PicRecAdapter;
+import com.example.android.chosemovie.adapter.PicRecAdapter;
 import com.example.android.chosemovie.base.MovieInfo;
 
 import org.json.JSONException;
@@ -32,7 +32,7 @@ public class MovieSearchTask extends AsyncTask<Integer, Void, MovieInfo[]> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressBar.setVisibility(View.VISIBLE);
+        showProgressBar();
     }
 
     @Override
@@ -59,9 +59,16 @@ public class MovieSearchTask extends AsyncTask<Integer, Void, MovieInfo[]> {
     @Override
     protected void onPostExecute(MovieInfo[] movieData) {
         if (movieData != null) {
-            progressBar.setVisibility(View.INVISIBLE);
+            hideProgressBar();
             imageAdapter.setData(movieData);
         }
     }
 
+    private void showProgressBar(){
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar(){
+        progressBar.setVisibility(View.INVISIBLE);
+    }
 }
