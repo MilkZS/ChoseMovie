@@ -1,9 +1,12 @@
 package com.example.android.chosemovie.utility;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
 import com.example.android.chosemovie.adapter.PicRecAdapter;
@@ -16,7 +19,6 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by milkdz on 2018/1/28.
@@ -31,13 +33,21 @@ public class MovieDetailSearchTask extends AsyncTask<String, Void, MovieSingleIn
     private final int ID_REVIEWS = PicRecAdapter.ID_REVIEWS;
     private MovieReviewsAdapter movieReviewsAdapter;
     private MovieTrailersAdapter movieTrailersAdapter;
+    private ProgressBar progressBar;
 
-    public MovieDetailSearchTask(OpenMovieInfoJson openMovieInfoJson,
+    public MovieDetailSearchTask(OpenMovieInfoJson openMovieInfoJson,ProgressBar progressBar,
                                  MovieReviewsAdapter movieReviewsAdapter,
                                  MovieTrailersAdapter movieTrailersAdapter) {
         this.openMovieInfoJson = openMovieInfoJson;
         this.movieReviewsAdapter = movieReviewsAdapter;
         this.movieTrailersAdapter = movieTrailersAdapter;
+        this.progressBar = progressBar;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        showProgress();
     }
 
     @Override
@@ -57,6 +67,7 @@ public class MovieDetailSearchTask extends AsyncTask<String, Void, MovieSingleIn
         if (movieSingleInfo == null) {
             return;
         }
+        hideProgress();
         movieReviewsAdapter.deliverData(movieSingleInfo.getMovieReviews());
         movieTrailersAdapter.deliverTrailers(movieSingleInfo.getMovieTrailers().getTrailersUrl());
     }
@@ -106,4 +117,11 @@ public class MovieDetailSearchTask extends AsyncTask<String, Void, MovieSingleIn
         return null;
     }
 
+    private void showProgress(){
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgress(){
+        progressBar.setVisibility(View.INVISIBLE);
+    }
 }
