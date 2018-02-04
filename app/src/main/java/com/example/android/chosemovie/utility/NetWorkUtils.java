@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.android.chosemovie.PicRecAdapter;
+import com.example.android.chosemovie.adapter.PicRecAdapter;
 import com.example.android.chosemovie.data.BaseDataInfo;
 
 import java.io.IOException;
