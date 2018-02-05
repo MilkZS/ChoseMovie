@@ -19,11 +19,15 @@ public class MovieInfoContract {
                 .build();
 
         public static final String TABLE_NAME = "movieInfo";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
         public static final String COLUMN_MOVIE_NAME = "title";
         public static final String COLUMN_MOVIE_DATE = "pub_date";
         public static final String COLUMN_MOVIE_VOTE = "vote";
         public static final String COLUMN_MOVIE_REVIEW = "review";
         public static final String COLUMN_MOVIE_TRAILER = "trailers";
+        public static final String COLUMN_MOVIE_POSTER_IMAGE = "poster_image";
+        public static final String COLUMN_MOVIE_BACK_IMAGE = "back_image";
+        public static final String COLUMN_MOVIE_FAVORITE = "favorite";
     }
 
     public static final class MovieReviews implements BaseColumns{
