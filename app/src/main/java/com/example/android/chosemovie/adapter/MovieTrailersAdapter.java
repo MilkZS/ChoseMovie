@@ -50,14 +50,10 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
     class MovieTrailersHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Button button;
-        private LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
 
         public MovieTrailersHolder(View itemView) {
             super(itemView);
             button = itemView.findViewById(R.id.button_trailers);
-            //button.setLayoutParams(layoutParams);
         }
 
         public void bindData(int position) {
