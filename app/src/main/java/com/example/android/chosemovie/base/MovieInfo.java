@@ -16,9 +16,10 @@ public class MovieInfo implements Serializable {
     private String pubDate;
     /** favorite = 1,do not favorite = 0 ,default is do not favorite*/
     private int ifFavorite = 0;
+    private String sFavoriteText;
 
     public MovieInfo(String id,String path,String title,String path_back,String overView,
-                     String voteAver,String pubDate,int ifFavorite){
+                     String voteAver,String pubDate,int ifFavorite,String sFavoriteText){
         this.id = id;
         this.path = path;
         this.title = title;
@@ -27,6 +28,15 @@ public class MovieInfo implements Serializable {
         this.voteAver = voteAver;
         this.pubDate = pubDate;
         this.ifFavorite = ifFavorite;
+        this.sFavoriteText = sFavoriteText;
+    }
+
+    public void setsFavoriteText(String sFavoriteText){
+        this.sFavoriteText = sFavoriteText;
+    }
+
+    public String getsFavoriteText(){
+        return sFavoriteText;
     }
 
     public void setId(String id){
