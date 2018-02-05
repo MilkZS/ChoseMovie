@@ -16,7 +16,7 @@
     <string name="movie_trailer">预告片</string>
     <string name="movie_review">影评</string>
     <string name="movie_favorite">收藏此电影</string>
-    <string name="movie_favorite_fix">已收藏此电影</string>
+    <string name="movie_favorite_fix">取消收藏</string>
 
     <string name="tool_movie_name">电影名称   haizezz</string>
     <string name="tool_movie_poster">电影海报</string>

@@ -1,5 +1,6 @@
 package com.example.android.chosemovie.utility;
 
+import android.content.ContentValues;
 import android.net.Uri;
 import android.util.Log;
 
@@ -7,11 +8,13 @@ import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.base.MovieTrailers;
 import com.example.android.chosemovie.data.BaseDataInfo;
+import com.example.android.chosemovie.db.MovieInfoContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -24,6 +27,7 @@ public class OpenMovieInfoJson {
     private String TAG = "OpenMovieInfoJson";
     private boolean DBG = true;
 
+    private String FAVORITE_TEXT_DEFAULT = "收藏此电影";
 
     private String QUERY = "results";
     private String POSTER_PATH = "poster_path";
@@ -55,6 +59,35 @@ public class OpenMovieInfoJson {
         return openMovieInfoJson;
     }
 
+    public ContentValues[] getDataFromMovieJson(String jsonString) throws JSONException {
+        if (DBG) Log.d(TAG, "jsonString read from themoviedb.org is : " + jsonString);
+        JSONObject movieJson = new JSONObject(jsonString);
+        JSONArray movieArray = movieJson.getJSONArray(QUERY);
+        ContentValues[] contentValues = new ContentValues[movieArray.length()];
+        JSONObject jsonObject;
+        String sPath;
+        String sPath_back;
+
+        String overView;
+        for (int i = 0; i < movieArray.length(); i++) {
+            jsonObject = movieArray.getJSONObject(i);
+            sPath = BaseDataInfo.baseUrl + jsonObject.getString(POSTER_PATH);
+           // sId = BaseDataInfo.originUrl + jsonObject.getString(ID);
+            sPath_back = BaseDataInfo.baseUrl + jsonObject.getString(BACK_PATH);
+            overView =  jsonObject.getString(OVER_VIEW);
+            ContentValues contentValueSingle = new ContentValues();
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID,jsonObject.getString(ID));
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_DATE,jsonObject.getString(RELEASE_DATE));
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_NAME,jsonObject.getString(TITLE));
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE,jsonObject.getString(VOTE_AVERAGE));
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE,sPath_back);
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE,sPath_back);
+
+            contentValues[i] = contentValueSingle;
+        }
+        return contentValues;
+    }
+
     /**
      * Analysis the jsonData from NetWorkUtils.getResponseFromHttpUrl
      *
@@ -63,7 +96,7 @@ public class OpenMovieInfoJson {
      * @throws JSONException
      * @see NetWorkUtils
      */
-    public MovieInfo[] getDataFromMovieJson(String jsonString) throws JSONException {
+    public MovieInfo[] getDataFromMovieJson1(String jsonString) throws JSONException {
 
         MovieInfo[] movieData;
         if (DBG) Log.d(TAG, "jsonString read from themoviedb.org is : " + jsonString);
@@ -87,7 +120,8 @@ public class OpenMovieInfoJson {
             overView = jsonObject.getString(OVER_VIEW);
             voteAver = jsonObject.getString(VOTE_AVERAGE);
             pubDate = jsonObject.getString(RELEASE_DATE);
-            movieInfo = new MovieInfo(sId, sPath, title, sPath_back, overView, voteAver, pubDate);
+            movieInfo = new MovieInfo(sId, sPath, title, sPath_back, overView, voteAver, pubDate,
+                    0,FAVORITE_TEXT_DEFAULT);
             movieData[i] = movieInfo;
         }
         return movieData;

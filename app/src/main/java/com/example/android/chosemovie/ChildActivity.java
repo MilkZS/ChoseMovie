@@ -1,6 +1,7 @@
 package com.example.android.chosemovie;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +18,7 @@ import com.example.android.chosemovie.adapter.MovieReviewsAdapter;
 import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.data.BaseDataInfo;
+import com.example.android.chosemovie.db.MovieInfoContract;
 import com.example.android.chosemovie.utility.MovieDetailSearchTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
@@ -91,7 +93,10 @@ public class ChildActivity extends AppCompatActivity {
     }
 
     public void markMovie(View view){
+        if(movieInfo.getIfFavorite() == 1){
 
+        }else if (movieInfo.getIfFavorite() == 0){
+
+        }
     }
-
 }
