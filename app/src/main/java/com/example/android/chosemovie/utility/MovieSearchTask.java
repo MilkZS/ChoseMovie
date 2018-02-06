@@ -47,10 +47,8 @@ public class MovieSearchTask extends AsyncTask<Integer, Void, MovieInfo[]> {
         MovieInfo[] movieData = null;
         try {
             sJsonData = NetWorkUtils.getResponseFromHttpUrl(url);
-            movieData = openMovieInfoJson.getDataFromMovieJson(sJsonData);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+         //   movieData = openMovieInfoJson.getDataFromMovieJson(sJsonData);
+        }  catch (IOException e) {
             e.printStackTrace();
         }
         return movieData;
@@ -60,7 +58,7 @@ public class MovieSearchTask extends AsyncTask<Integer, Void, MovieInfo[]> {
     protected void onPostExecute(MovieInfo[] movieData) {
         if (movieData != null) {
             hideProgressBar();
-            imageAdapter.setData(movieData);
+            //imageAdapter.setData(movieData);
         }
     }
 

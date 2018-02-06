@@ -71,6 +71,9 @@ public class OpenMovieInfoJson {
         String overView;
         for (int i = 0; i < movieArray.length(); i++) {
             jsonObject = movieArray.getJSONObject(i);
+
+            String sReview = MovieInfoContract.MovieReviews.TABLE_NAME + i;
+            String sTrailers = MovieInfoContract.MovieTrailers.TABLE_NAME + i;
             sPath = BaseDataInfo.baseUrl + jsonObject.getString(POSTER_PATH);
            // sId = BaseDataInfo.originUrl + jsonObject.getString(ID);
             sPath_back = BaseDataInfo.baseUrl + jsonObject.getString(BACK_PATH);
@@ -80,9 +83,10 @@ public class OpenMovieInfoJson {
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_DATE,jsonObject.getString(RELEASE_DATE));
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_NAME,jsonObject.getString(TITLE));
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE,jsonObject.getString(VOTE_AVERAGE));
-            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE,sPath_back);
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE,sPath);
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE,sPath_back);
-
+            //contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW,sReview);
+            //contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER,sTrailers);
             contentValues[i] = contentValueSingle;
         }
         return contentValues;

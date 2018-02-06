@@ -117,10 +117,16 @@ public class MovieDetailSearchTask extends AsyncTask<String, Void, MovieSingleIn
         return null;
     }
 
+    /**
+     * Show progress and hide other UI views
+     */
     private void showProgress(){
         progressBar.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Hide the progress and show other UI views
+     */
     private void hideProgress(){
         progressBar.setVisibility(View.INVISIBLE);
     }
