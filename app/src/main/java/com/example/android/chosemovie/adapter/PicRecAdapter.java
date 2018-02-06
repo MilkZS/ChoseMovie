@@ -1,6 +1,8 @@
 package com.example.android.chosemovie.adapter;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.http.SslCertificate;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import com.example.android.chosemovie.R;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
+import com.example.android.chosemovie.db.MovieInfoContract;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -20,7 +23,8 @@ import com.squareup.picasso.Picasso;
 public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnViewHolder>{
 
     private String TAG = "PicRecAdapter";
-    private MovieInfo[] mData;
+    private boolean DBG = true;
+    private Cursor mCursor;
     private Context context;
     /* 0:sort by popular  1:sort by rate data  the default sort is by popular */
     public final static int POPULAR_MODE = 0;
@@ -46,47 +50,45 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
 
     @Override
     public void onBindViewHolder(PictureOnViewHolder holder, int position) {
-        holder.bind(position,context);
+        mCursor.moveToPosition(position);
+
+       String sPath = mCursor.getString(
+               mCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE));
+        if (DBG) Log.d(TAG,"Path := " + sPath);
+        Picasso.with(context).load(sPath).into(holder.listItem);
+
+
+    }
+
+    public void swapCursor(Cursor cursor){
+        mCursor = cursor;
+        notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if(mData == null){
+        if(mCursor == null){
             return 0;
         }
-        return mData.length;
+        return mCursor.getCount();
     }
 
     class PictureOnViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView listItem;
-        MovieInfo movieInfo;
+
         public PictureOnViewHolder(View itemView) {
             super(itemView);
             listItem = itemView.findViewById(R.id.image_show_movie);
             listItem.setOnClickListener(this);
         }
 
-        void bind( int position,Context context){
-            String sPath = mData[position].getPath();
-            Log.d(TAG,"Path := " + sPath);
-            Picasso.with(context).load(sPath).into(listItem);
-        }
-
         @Override
         public void onClick(View v) {
             int adapterLocation = getAdapterPosition();
-            movieInfo = mData[adapterLocation];
-            movieClickHandle.onClick(movieInfo);
+            mCursor.moveToPosition(adapterLocation);
+            long listItemNum = mCursor.getColumnIndex(
+                    MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE);
+            movieClickHandle.onClick(listItemNum);
         }
-    }
-
-    /**
-     * use interface to receive data
-     *
-     * @param mData data array
-     */
-    public void setData(MovieInfo[] mData){
-        this.mData = mData;
-        notifyDataSetChanged();
     }
 }
