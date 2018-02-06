@@ -9,6 +9,13 @@ public interface BaseDataInfo {
     String baseUrl = "http://image.tmdb.org/t/p/w185/";
     String originUrl = "http://api.themoviedb.org/3/movie/";
 
+    String POPULAR = "popular";
+    int POPULAR_MODE = 0;
+    int RATE_DATE_MODE = 1;
+    int BOTH_POPULAR_RATE_MODE = 5;
+    int FAVORITE_MODE = 4;
+    String TOP_RATE = "top_rated";
+
     //the url of themoviedb search
     String searchQueryPopularFromDB = originUrl + "popular";
     String searchQueryTopRateFromDB = originUrl + "top_rated";
