@@ -1,6 +1,11 @@
 package com.example.android.chosemovie;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,10 +20,12 @@ import com.example.android.chosemovie.adapter.PicRecAdapter;
 import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
 import com.example.android.chosemovie.data.BaseDataInfo;
+import com.example.android.chosemovie.data.SQLBaseInfo;
+import com.example.android.chosemovie.db.MovieInfoContract;
 import com.example.android.chosemovie.utility.MovieSearchTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 
-public class MainActivity extends AppCompatActivity implements MovieClickHandle {
+public class MainActivity extends AppCompatActivity implements MovieClickHandle,LoaderManager.LoaderCallbacks<Cursor> {
 
     private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
@@ -31,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle 
     private PicRecAdapter imageAdapter;
     private ProgressBar progressBar;
     private MovieSearchTask movieSearchTask;
+
+    private int mPosition = RecyclerView.NO_POSITION;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle 
         imageAdapter = new PicRecAdapter(this);
         recyclerView.setAdapter(imageAdapter);
         Log.d(TAG, "start Task");
-        refreshMode(POPULAR_MODE);
+        //refreshMode(POPULAR_MODE);
+        getSupportLoaderManager().initLoader(POPULAR_MODE,null,null);
     }
 
     /**
@@ -87,12 +97,13 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle 
         }
     }
 
+
     @Override
-    public void onClick(MovieInfo movieInfo) {
+    public void onClick(long index) {
         Class desClass = ChildActivity.class;
-        Intent intent = new Intent(this, desClass);
-        intent.putExtra(BaseDataInfo.CLASS_PASS, movieInfo);
-        startActivity(intent);
+        //Intent intent = new Intent(this, desClass);
+        //intent.putExtra(BaseDataInfo.CLASS_PASS, movieInfo);
+        //startActivity(intent);
         // Toast.makeText(this,sId,Toast.LENGTH_SHORT).show();
     }
 
@@ -118,5 +129,37 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle 
             break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        switch (id){
+            case POPULAR_MODE:{
+                Uri movieUri = MovieInfoContract.MovieInfos.CONTENT_URI;
+                String sOrder = MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE
+                        + SQLBaseInfo.SORT_AES;
+                String select = MovieInfoContract.getSelect(POPULAR_MODE);
+                return new CursorLoader(this,movieUri, MovieInfoContract.MAIN_MOVIE_UI,select,null,sOrder);
+            }
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        imageAdapter.swapCursor(data);
+        if(mPosition == RecyclerView.NO_POSITION){
+            mPosition = 0;
+        }
+        recyclerView.smoothScrollToPosition(mPosition);
+        if (data.getCount() != 0){
+
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        imageAdapter.swapCursor(null);
     }
 }
