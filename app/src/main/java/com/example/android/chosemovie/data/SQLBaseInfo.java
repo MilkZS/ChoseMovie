@@ -13,4 +13,8 @@ public interface SQLBaseInfo {
     String TEXT_NO_NULL = " TEXT NOT NULL, ";
 
     String DROP_TABLE = " DROP TABLE IF EXISTS ";
+
+    String SORT_AES = " ASC ";
+
+    String OR = " OR ";
 }
