@@ -3,6 +3,9 @@ package com.example.android.chosemovie.db;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.example.android.chosemovie.data.BaseDataInfo;
+import com.example.android.chosemovie.data.SQLBaseInfo;
+
 /**
  * Created by milkdz on 2018/2/4.
  */
@@ -28,6 +31,7 @@ public class MovieInfoContract {
         public static final String COLUMN_MOVIE_POSTER_IMAGE = "poster_image";
         public static final String COLUMN_MOVIE_BACK_IMAGE = "back_image";
         public static final String COLUMN_MOVIE_FAVORITE = "favorite";
+        public static final String COLUMN_MOVIE_SORT = "sort";
     }
 
     public static final class MovieReviews implements BaseColumns{
@@ -41,6 +45,11 @@ public class MovieInfoContract {
         public static final String COLUMN_MOVIE_TRAILER_URI = "trailers_uri";
     }
 
+    public static final String[] MAIN_MOVIE_UI = new String[]{
+            MovieInfos.COLUMN_MOVIE_POSTER_IMAGE,
+            MovieInfos.COLUMN_MOVIE_SORT
+    };
+
     /**
      * Build content Uri for movie detail
      *
@@ -49,5 +58,16 @@ public class MovieInfoContract {
      */
     public static Uri buildContentForMovieDetail(String base){
         return BASE_CONTENT_URI.buildUpon().appendPath(base).build();
+    }
+
+    /**
+     * Get the selection
+     *
+     * @param select select value
+     * @return select string
+     */
+    public static String getSelect(int select){
+        return MovieInfos.COLUMN_MOVIE_SORT + "=" + select + SQLBaseInfo.OR
+                + MovieInfos.COLUMN_MOVIE_SORT + "=" + BaseDataInfo.BOTH_POPULAR_RATE_MODE;
     }
 }
