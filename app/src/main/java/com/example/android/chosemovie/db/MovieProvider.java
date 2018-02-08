@@ -47,8 +47,8 @@ public class MovieProvider extends ContentProvider {
                         if (_id != -1) {
                             rowId++;
                         }
-                        db.setTransactionSuccessful();
                     }
+                    db.setTransactionSuccessful();
                 }finally {
                     db.endTransaction();
                 }
