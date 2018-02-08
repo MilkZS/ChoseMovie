@@ -18,14 +18,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ChildActivity"
             android:label="@string/activity_label"
             android:parentActivityName=".MainActivity">
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity"/>
         </activity>
+
         <service android:name=".sync.MovieSyncIntentService"
             android:exported="false" />
+
+        <provider
+            android:name=".db.MovieProvider"
+            android:authorities="com.example.android.chosemovie"
+            android:exported="false"/>
     </application>
 
 </manifest>
