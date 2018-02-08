@@ -1,12 +1,11 @@
 package com.example.android.chosemovie;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,17 +14,17 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.android.chosemovie.adapter.PicRecAdapter;
-import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
-import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.data.SQLBaseInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
+import com.example.android.chosemovie.sync.MovieSyncUtil;
 import com.example.android.chosemovie.utility.MovieSearchTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 
-public class MainActivity extends AppCompatActivity implements MovieClickHandle,LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity implements MovieClickHandle, LoaderManager.LoaderCallbacks<Cursor> {
 
     private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
@@ -57,8 +56,10 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         imageAdapter = new PicRecAdapter(this);
         recyclerView.setAdapter(imageAdapter);
         Log.d(TAG, "start Task");
-        //refreshMode(POPULAR_MODE);
-        getSupportLoaderManager().initLoader(POPULAR_MODE,null,null);
+        refreshMode(POPULAR_MODE);
+        //getSupportLoaderManager().initLoader(POPULAR_MODE, null, this);
+
+
     }
 
     /**
@@ -72,26 +73,21 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     public void refreshMode(int choseMode) {
         switch (choseMode) {
             case POPULAR_MODE: {
-                if (movieSearchTask != null) {
-                    movieSearchTask.cancel(true);
-                }
-                movieSearchTask = new MovieSearchTask(progressBar, imageAdapter, openMovieInfoJson);
-                movieSearchTask.execute(POPULAR_MODE);
+                getSupportLoaderManager().restartLoader(POPULAR_MODE, null, this);
+                MovieSyncUtil.initialize(this,POPULAR_MODE);
             }
             break;
             case RATE_DATA_MODE: {
-                if (movieSearchTask != null) {
-                    movieSearchTask.cancel(true);
-                }
-                movieSearchTask = new MovieSearchTask(progressBar, imageAdapter, openMovieInfoJson);
-                movieSearchTask.execute(RATE_DATA_MODE);
+                Log.d("test1","RATE--MAIN");
+                //getSupportLoaderManager().restartLoader()
+                getSupportLoaderManager().restartLoader(RATE_DATA_MODE, null, this);
+                MovieSyncUtil.initialize(this,RATE_DATA_MODE);
             }
             break;
             case FAVORITE_MODE: {
-                if(movieSearchTask != null){
+                if (movieSearchTask != null) {
                     movieSearchTask.cancel(true);
                 }
-
             }
             break;
         }
@@ -100,11 +96,11 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
 
     @Override
     public void onClick(long index) {
-        Class desClass = ChildActivity.class;
-        //Intent intent = new Intent(this, desClass);
+       // Class desClass = ChildActivity.class;
+       // Intent intent = new Intent(this, desClass);
         //intent.putExtra(BaseDataInfo.CLASS_PASS, movieInfo);
         //startActivity(intent);
-        // Toast.makeText(this,sId,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,index+"",Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -133,13 +129,25 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id){
-            case POPULAR_MODE:{
+        switch (id) {
+            case POPULAR_MODE: {
                 Uri movieUri = MovieInfoContract.MovieInfos.CONTENT_URI;
                 String sOrder = MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE
                         + SQLBaseInfo.SORT_AES;
                 String select = MovieInfoContract.getSelect(POPULAR_MODE);
-                return new CursorLoader(this,movieUri, MovieInfoContract.MAIN_MOVIE_UI,select,null,sOrder);
+                return new CursorLoader(this, movieUri, MovieInfoContract.MAIN_MOVIE_UI,
+                        select, null, sOrder);
+            }
+            case RATE_DATA_MODE: {
+                Log.d("test1","RATE--OncreateLoader");
+                Uri movieUri = MovieInfoContract.MovieInfos.CONTENT_URI;
+                String sOrder = MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE
+                        + SQLBaseInfo.SORT_AES;
+                Log.d("test1",movieUri.toString());
+                String select = MovieInfoContract.getSelect(RATE_DATA_MODE);
+                Log.d("test1",select);
+                return new CursorLoader(this, movieUri, MovieInfoContract.MAIN_MOVIE_UI,
+                        select, null, sOrder);
             }
             default:
                 throw new RuntimeException("Loader Not Implemented: " + id);
@@ -149,11 +157,11 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         imageAdapter.swapCursor(data);
-        if(mPosition == RecyclerView.NO_POSITION){
+        if (mPosition == RecyclerView.NO_POSITION) {
             mPosition = 0;
         }
         recyclerView.smoothScrollToPosition(mPosition);
-        if (data.getCount() != 0){
+        if (data.getCount() != 0) {
 
         }
     }
