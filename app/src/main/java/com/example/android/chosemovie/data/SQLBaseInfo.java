@@ -8,9 +8,9 @@ public interface SQLBaseInfo {
 
     String CREATE_TABLE = "CREATE TABLE ";
 
-    String INT_PRIMARY_KEY = " INTEGER PRIMARY KEY AUTOINCREMENT, ";
+    String INT_PRIMARY_KEY = " INTEGER PRIMARY KEY AUTOINCREMENT ";
 
-    String TEXT_NO_NULL = " TEXT NOT NULL, ";
+    String TEXT_NO_NULL = " TEXT NOT NULL ";
 
     String DROP_TABLE = " DROP TABLE IF EXISTS ";
 
