@@ -59,7 +59,7 @@ public class OpenMovieInfoJson {
         return openMovieInfoJson;
     }
 
-    public ContentValues[] getDataFromMovieJson(String jsonString) throws JSONException {
+    public ContentValues[] getDataFromMovieJson(String jsonString,int mode) throws JSONException {
         if (DBG) Log.d(TAG, "jsonString read from themoviedb.org is : " + jsonString);
         JSONObject movieJson = new JSONObject(jsonString);
         JSONArray movieArray = movieJson.getJSONArray(QUERY);
@@ -85,6 +85,9 @@ public class OpenMovieInfoJson {
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE,jsonObject.getString(VOTE_AVERAGE));
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE,sPath);
             contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE,sPath_back);
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_FAVORITE,0);
+            contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT,mode);
+            Log.d("========mode",mode+"");
             //contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW,sReview);
             //contentValueSingle.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER,sTrailers);
             contentValues[i] = contentValueSingle;
