@@ -27,17 +27,17 @@ public class MovieInfoDBHelper extends SQLiteOpenHelper {
 
     private String searchSQLFromTableMovieInfo(){
         return SQLBaseInfo.CREATE_TABLE + MovieInfoContract.MovieInfos.TABLE_NAME + " ( "
-                + MovieInfoContract.MovieInfos._ID + SQLBaseInfo.INT_PRIMARY_KEY
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_NAME + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_DATE + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE + SQLBaseInfo.TEXT_NO_NULL
+                + MovieInfoContract.MovieInfos._ID + SQLBaseInfo.INT_PRIMARY_KEY + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID + SQLBaseInfo.TEXT_NO_NULL + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_NAME + SQLBaseInfo.TEXT_NO_NULL + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_DATE + SQLBaseInfo.TEXT_NO_NULL + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE + SQLBaseInfo.TEXT_NO_NULL + ","
                 + MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER + ","
                 + MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW + ","
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_FAVORITE + SQLBaseInfo.TEXT_NO_NULL
-                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT + SQLBaseInfo.TEXT_NO_NULL
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_POSTER_IMAGE + SQLBaseInfo.TEXT_NO_NULL + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE + SQLBaseInfo.TEXT_NO_NULL + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_FAVORITE + ","
+                + MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT
                 + " ); ";
     }
 
