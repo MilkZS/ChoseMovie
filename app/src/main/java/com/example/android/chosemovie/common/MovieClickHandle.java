@@ -7,5 +7,5 @@ import com.example.android.chosemovie.base.MovieInfo;
  */
 
 public interface MovieClickHandle {
-    void onClick(long index);
+    void onClick(String index);
 }
