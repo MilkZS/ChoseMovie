@@ -8,4 +8,7 @@
     <item
         android:title="@string/main_ui_item_top_rate"
         android:id="@+id/tv_sort_by_date"/>
+    <item
+        android:title="@string/main_ui_item_favorite"
+        android:id="@+id/tv_sort_by_favorite"/>
 </menu>
