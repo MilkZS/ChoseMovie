@@ -1,40 +1,51 @@
 package com.example.android.chosemovie;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.chosemovie.adapter.MovieReviewsAdapter;
 import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
-import com.example.android.chosemovie.base.MovieInfo;
+import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
-import com.example.android.chosemovie.utility.MovieDetailSearchTask;
+import com.example.android.chosemovie.sync.MovieSyncTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
 
-public class ChildActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class ChildActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String TAG = "ChildActivity";
     private boolean DBG = true;
-    private MovieInfo movieInfo;
-    private MovieDetailSearchTask movieDetailSearchTask;
+
     private OpenMovieInfoJson openMovieInfoJson;
     private MovieReviewsAdapter movieReviewsAdapter;
     private RecyclerView recyclerViewReview;
     private MovieTrailersAdapter movieTrailersAdapter;
     private RecyclerView recyclerViewTrailer;
     private ProgressBar progressBar;
+
+    private Uri mUri;
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     private ImageView imageView;
     private TextView titleTextView;
@@ -43,10 +54,18 @@ public class ChildActivity extends AppCompatActivity {
     private TextView userViewTextView;
     private Button buttonFavorite;
 
+    private String Movie_Id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_child);
+
+        sharedPreferences = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE, MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        progressBar = findViewById(R.id.show_progress_child);
+
 
         imageView = findViewById(R.id.movie_detail_image);
         titleTextView = findViewById(R.id.movie_detail_title);
@@ -63,7 +82,7 @@ public class ChildActivity extends AppCompatActivity {
         recyclerViewReview.setHasFixedSize(true);
         recyclerViewReview.setAdapter(movieReviewsAdapter);
 
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,4);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 4);
         movieTrailersAdapter = new MovieTrailersAdapter();
         recyclerViewTrailer = findViewById(R.id.show_trailer);
         recyclerViewTrailer.setLayoutManager(gridLayoutManager);
@@ -71,32 +90,145 @@ public class ChildActivity extends AppCompatActivity {
         recyclerViewTrailer.setAdapter(movieTrailersAdapter);
 
         progressBar = findViewById(R.id.show_progress_child);
-        movieDetailSearchTask = new MovieDetailSearchTask(openMovieInfoJson,progressBar,
-                movieReviewsAdapter, movieTrailersAdapter);
-
 
         Intent intent = getIntent();
-        if (intent.hasExtra(BaseDataInfo.CLASS_PASS)) {
-            movieInfo = (MovieInfo) intent.getSerializableExtra(BaseDataInfo.CLASS_PASS);
+        mUri = intent.getData();
+        if (mUri == null) {
+            throw new NullPointerException("URI for DetailActivity cannot be null");
         }
-        movieDetailSearchTask.execute(movieInfo.getId());
-        String sImagePath = movieInfo.getPath_back();
-        Picasso.with(this).load(sImagePath).into(imageView);
 
-        titleTextView.setText(movieInfo.getTitle());
-        dateTextView.setText(movieInfo.getPubDate());
-        userViewTextView.setText(movieInfo.getOverView());
-
-        String sVote = movieInfo.getVoteAver();
-        sVote = getResources().getString(R.string.movie_vote) + "\t" + sVote;
-        voteTextView.setText(sVote);
+        getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
     }
 
-    public void markMovie(View view){
-        if(movieInfo.getIfFavorite() == 1){
-
-        }else if (movieInfo.getIfFavorite() == 0){
-
+    /**
+     * when button is clicked , change the preference
+     *
+     * @param view button view
+     */
+    public void markMovie(View view) {
+        String buttonFavoriteText = (String) buttonFavorite.getText();
+        if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite))) {
+            buttonFavorite.setText(getResources().getString(R.string.movie_favorite_fix));
+            editor.putInt(Movie_Id, BaseDataInfo.FAVORITE_MODE);
+        } else if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite_fix))) {
+            //Toast.makeText(this,buttonFavorite.getText(),Toast.LENGTH_SHORT).show();
+            buttonFavorite.setText(getResources().getString(R.string.movie_favorite));
+            editor.putInt(Movie_Id, BaseDataInfo.UN_FAVORITE);
         }
+        editor.commit();
+        MovieSyncTask.syncMovie(openMovieInfoJson,this);
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        switch (id) {
+            case BaseDataInfo.ID_MOVIE: {
+                return new CursorLoader(this, mUri, MovieInfoContract.CHILD_MOVIE_UI,
+                        null, null, null);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Cursor data) {
+        if (data != null && data.moveToFirst()) {
+            setInfoIntoUI(data);
+           // setTrailers(data);
+          //  setReviews(data);
+        }
+    }
+
+    /**
+     * Set info into the UI
+     *
+     * @param dataCursor cursor include messages
+     */
+    private void setInfoIntoUI(Cursor dataCursor) {
+        // detail movie image
+        String sImagePath = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE));
+        Picasso.with(this).load(sImagePath).into(imageView);
+
+        //detail movie name
+        String sTitle = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_NAME));
+        titleTextView.setText(sTitle);
+
+        //detail movie public date
+        String sDate = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_DATE));
+        dateTextView.setText(sDate);
+
+        //detail movie over view
+        String sOverView = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_OVER_VIEW));
+        userViewTextView.setText(sOverView);
+
+        //detail movie vote
+        String sVote = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_VOTE));
+        sVote = getResources().getString(R.string.movie_vote) + "\t" + sVote;
+        voteTextView.setText(sVote);
+
+        //detail movie favorite find by movie id sort by button
+        Movie_Id = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID));
+        int sFavorite = sharedPreferences.getInt(
+                Movie_Id, BaseDataInfo.UN_FAVORITE);
+        switch (sFavorite) {
+            case BaseDataInfo.FAVORITE_MODE: {
+                if (DBG) Log.d(TAG, "sFavorite : " + sFavorite);
+                buttonFavorite.setText(getResources().getString(R.string.movie_favorite_fix));
+            }
+            break;
+            case BaseDataInfo.UN_FAVORITE: {
+                if (DBG) Log.d(TAG, "sFavorite : " + sFavorite);
+                buttonFavorite.setText(getResources().getString(R.string.movie_favorite));
+            }
+            break;
+        }
+    }
+
+    /**
+     * Get Uri arrayList from cursor
+     *
+     * @param dataCursor row cursor
+     */
+    private void setTrailers(Cursor dataCursor){
+        String sTrailers = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER));
+        if(sTrailers == null || sTrailers.equals("")){
+            Log.d(TAG,"Trailers is null");
+            return;
+        }
+        String[] sTrailersArr = sTrailers.split(";");
+        ArrayList<Uri> uriArrayList = new ArrayList<>();
+        for (int i=1;i<sTrailersArr.length;i++){
+            Uri uri = Uri.parse(sTrailersArr[i]).buildUpon().build();
+            Log.d(TAG,uri.toString());
+            uriArrayList.add(uri);
+        }
+        movieTrailersAdapter.deliverTrailers(uriArrayList);
+    }
+
+    private void setReviews(Cursor dataCursor){
+        String reviews = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW));
+        if(reviews == null || reviews.equals("")){
+            Log.d(TAG,"Reviews is null");
+            return;
+        }
+        String[] reviewsArr = reviews.split(";");
+        MovieReviews[] movieReviews = new MovieReviews[reviewsArr.length - 1];
+        for (int i=1;i<reviewsArr.length;i++){
+            String[] s = reviewsArr[i].split(",");
+            movieReviews[i-1] = new MovieReviews(s[0],s[1]);
+        }
+        movieReviewsAdapter.deliverData(movieReviews);
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
     }
 }
