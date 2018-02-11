@@ -25,6 +25,7 @@ import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
 import com.example.android.chosemovie.sync.MovieSyncTask;
+import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
 
@@ -46,6 +47,8 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private SharedPreferences sharedPreferencesUI;
+    private SharedPreferences.Editor editorUI;
 
     private ImageView imageView;
     private TextView titleTextView;
@@ -56,6 +59,9 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
     private String Movie_Id;
 
+    private String CHILD_STATE_REVIEW = "_review_";
+    private String CHILD_STATE_TRAILER = "_trailer_";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +69,12 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
         sharedPreferences = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE, MODE_PRIVATE);
         editor = sharedPreferences.edit();
+        sharedPreferencesUI = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE_CHILD,MODE_PRIVATE);
+        editorUI = sharedPreferencesUI.edit();
+
+        Log.e(TAG,"========<<");
 
         progressBar = findViewById(R.id.show_progress_child);
-
 
         imageView = findViewById(R.id.movie_detail_image);
         titleTextView = findViewById(R.id.movie_detail_title);
@@ -98,7 +107,13 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
         }
 
         getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
+       // if(intent.hasExtra(Intent.EXTRA_TEXT)){
+//            Log.d(TAG,"initMode"+initMode+"");
+        new MovieSyncDataTask(openMovieInfoJson,this).execute();
+       // }
     }
+
+
 
     /**
      * when button is clicked , change the preference
@@ -111,7 +126,6 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
             buttonFavorite.setText(getResources().getString(R.string.movie_favorite_fix));
             editor.putInt(Movie_Id, BaseDataInfo.FAVORITE_MODE);
         } else if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite_fix))) {
-            //Toast.makeText(this,buttonFavorite.getText(),Toast.LENGTH_SHORT).show();
             buttonFavorite.setText(getResources().getString(R.string.movie_favorite));
             editor.putInt(Movie_Id, BaseDataInfo.UN_FAVORITE);
         }
@@ -134,8 +148,8 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     public void onLoadFinished(Loader loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
             setInfoIntoUI(data);
-           // setTrailers(data);
-          //  setReviews(data);
+            setTrailers(data);
+            setReviews(data);
         }
     }
 
@@ -145,6 +159,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
      * @param dataCursor cursor include messages
      */
     private void setInfoIntoUI(Cursor dataCursor) {
+        Log.e(TAG,"setInfo");
         // detail movie image
         String sImagePath = dataCursor.getString(
                 dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_BACK_IMAGE));
@@ -190,28 +205,6 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
         }
     }
 
-    /**
-     * Get Uri arrayList from cursor
-     *
-     * @param dataCursor row cursor
-     */
-    private void setTrailers(Cursor dataCursor){
-        String sTrailers = dataCursor.getString(
-                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER));
-        if(sTrailers == null || sTrailers.equals("")){
-            Log.d(TAG,"Trailers is null");
-            return;
-        }
-        String[] sTrailersArr = sTrailers.split(";");
-        ArrayList<Uri> uriArrayList = new ArrayList<>();
-        for (int i=1;i<sTrailersArr.length;i++){
-            Uri uri = Uri.parse(sTrailersArr[i]).buildUpon().build();
-            Log.d(TAG,uri.toString());
-            uriArrayList.add(uri);
-        }
-        movieTrailersAdapter.deliverTrailers(uriArrayList);
-    }
-
     private void setReviews(Cursor dataCursor){
         String reviews = dataCursor.getString(
                 dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW));
@@ -228,7 +221,38 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
         movieReviewsAdapter.deliverData(movieReviews);
     }
 
+    /**
+     * Get Uri arrayList from cursor
+     *
+     * @param dataCursor row cursor
+     */
+    private void setTrailers(Cursor dataCursor){
+        String sTrailers = dataCursor.getString(
+                dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_TRAILER));
+        if(sTrailers == null || sTrailers.equals("")){
+            Log.d(TAG,"Trailers is null");
+            return;
+        }
+        Log.d(TAG,"Trailers is not null");
+        String[] sTrailersArr = sTrailers.split(";");
+        ArrayList<Uri> uriArrayList = new ArrayList<>();
+        for (int i=1;i<sTrailersArr.length;i++){
+            Uri uri = Uri.parse(sTrailersArr[i]).buildUpon().build();
+            Log.d(TAG,uri.toString());
+            uriArrayList.add(uri);
+        }
+        movieTrailersAdapter.deliverTrailers(uriArrayList);
+    }
+
     @Override
     public void onLoaderReset(Loader loader) {
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CHILD_STATE_REVIEW,"");
+        outState.putString(CHILD_STATE_TRAILER,"");
+
     }
 }
