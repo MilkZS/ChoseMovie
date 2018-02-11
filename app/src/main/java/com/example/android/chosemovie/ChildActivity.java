@@ -102,14 +102,21 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
         Intent intent = getIntent();
         mUri = intent.getData();
+        Log.e(TAG,"mUri " + mUri);
         if (mUri == null) {
             throw new NullPointerException("URI for DetailActivity cannot be null");
         }
 
-        getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
+        //if (savedInstanceState == null){
+            getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
+        //}else {
+        //    getSupportLoaderManager().restartLoader(BaseDataInfo.ID_MOVIE,null,this);
+
+
+        Log.e(TAG,"run here");
        // if(intent.hasExtra(Intent.EXTRA_TEXT)){
 //            Log.d(TAG,"initMode"+initMode+"");
-        new MovieSyncDataTask(openMovieInfoJson,this).execute();
+//        new MovieSyncDataTask(openMovieInfoJson,this).execute();
        // }
     }
 
@@ -251,8 +258,8 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(CHILD_STATE_REVIEW,"");
-        outState.putString(CHILD_STATE_TRAILER,"");
-
+        //(CHILD_STATE_REVIEW,recyclerViewReview);
+        //outState.putString(CHILD_STATE_TRAILER,"");
+        //outState.setClassLoader();
     }
 }
