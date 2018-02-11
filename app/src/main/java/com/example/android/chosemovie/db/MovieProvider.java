@@ -2,12 +2,19 @@ package com.example.android.chosemovie.db;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
+
+import com.example.android.chosemovie.data.BaseDataInfo;
+
+import java.util.concurrent.CompletionStage;
 
 /**
  * Created by milkdz on 2018/2/4.
@@ -15,8 +22,11 @@ import android.support.annotation.Nullable;
 
 public class MovieProvider extends ContentProvider {
 
+    private String TAG = "MovieProvider";
+    private boolean DBG = true;
+
     public static final int CODE_MOVIE = 100;
-    public static final int CODE_MOVIE_ID = 101;
+    public static final int CODE_MOVIE_BASE_ID = 101;
 
     private static final UriMatcher uriMatcher = buildUriMatcher();
     private MovieInfoDBHelper movieInfoDBHelper;
@@ -30,7 +40,7 @@ public class MovieProvider extends ContentProvider {
     /**
      * Insert data into db
      *
-     * @param uri content URI
+     * @param uri    content URI
      * @param values a row data
      * @return rowId
      */
@@ -38,8 +48,8 @@ public class MovieProvider extends ContentProvider {
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = movieInfoDBHelper.getWritableDatabase();
         int rowId = 0;
-        switch (uriMatcher.match(uri)){
-            case CODE_MOVIE:{
+        switch (uriMatcher.match(uri)) {
+            case CODE_MOVIE: {
                 db.beginTransaction();
                 try {
                     for (ContentValues value : values) {
@@ -49,26 +59,26 @@ public class MovieProvider extends ContentProvider {
                         }
                     }
                     db.setTransactionSuccessful();
-                }finally {
+                } finally {
                     db.endTransaction();
                 }
-                if(rowId > 0){
-                    getContext().getContentResolver().notifyChange(uri,null);
+                if (rowId > 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
                 }
                 return rowId;
             }
         }
-        return super.bulkInsert(uri,values);
+        return super.bulkInsert(uri, values);
     }
 
     /**
      * Query data from db
      *
-     * @param uri Content uri
+     * @param uri           Content uri
      * @param projection
-     * @param selection query row name
+     * @param selection     query row name
      * @param selectionArgs target row array
-     * @param sortOrder sort auto
+     * @param sortOrder     sort auto
      * @return cursor include data
      */
     @Nullable
@@ -76,25 +86,32 @@ public class MovieProvider extends ContentProvider {
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
         Cursor cursor;
-        switch (uriMatcher.match(uri)){
-            case CODE_MOVIE_ID:{
+        switch (uriMatcher.match(uri)) {
+            case CODE_MOVIE_BASE_ID: {
                 String normalIdString = uri.getLastPathSegment();
                 String[] IdStringsArr = new String[]{normalIdString};
+                if (DBG) Log.d(TAG, "_ID = " + IdStringsArr[0]);
                 cursor = movieInfoDBHelper.getReadableDatabase().query(
-                        MovieInfoContract.MovieInfos.TABLE_NAME,IdStringsArr,
-                        MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID+"=",
-                        selectionArgs,null,null,sortOrder);
-            }break;
-            case CODE_MOVIE:{
+                        MovieInfoContract.MovieInfos.TABLE_NAME, projection,
+                        MovieInfoContract.MovieInfos._ID + " = " + IdStringsArr[0],
+                        null, null, null, null);
+            }
+            break;
+            case CODE_MOVIE: {
+                Log.d(TAG, "CODE_MOVIE ");
+                Log.d(TAG, "CODE_MOVIE selection" + selection);
+                Log.d(TAG, "CODE_MOVIE selectionArgs" + selectionArgs);
+
                 cursor = movieInfoDBHelper.getReadableDatabase().query(
-                        MovieInfoContract.MovieInfos.TABLE_NAME,projection,selection,selectionArgs,
-                        null,null,sortOrder);
-            }break;
+                        MovieInfoContract.MovieInfos.TABLE_NAME, projection, selection, selectionArgs,
+                        null, null, sortOrder);
+            }
+            break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -113,8 +130,8 @@ public class MovieProvider extends ContentProvider {
     /**
      * Delete data from db
      *
-     * @param uri content uri
-     * @param selection row name select
+     * @param uri           content uri
+     * @param selection     row name select
      * @param selectionArgs select values
      * @return delete row numbers
      */
@@ -123,16 +140,17 @@ public class MovieProvider extends ContentProvider {
         int rowId = 0;
         if (null == selection) selection = "1";
 
-        switch (uriMatcher.match(uri)){
-            case CODE_MOVIE:{
+        switch (uriMatcher.match(uri)) {
+            case CODE_MOVIE: {
                 rowId = movieInfoDBHelper.getWritableDatabase().delete(
-                        MovieInfoContract.MovieInfos.TABLE_NAME, selection,selectionArgs);
-            }break;
+                        MovieInfoContract.MovieInfos.TABLE_NAME, selection, selectionArgs);
+            }
+            break;
             default:
                 throw new UnsupportedOperationException("Un know uri :" + uri);
         }
-        if(rowId != -1){
-            getContext().getContentResolver().notifyChange(uri,null);
+        if (rowId != -1) {
+            getContext().getContentResolver().notifyChange(uri, null);
         }
         return rowId;
     }
@@ -140,7 +158,24 @@ public class MovieProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
-        return 0;
+        switch (uriMatcher.match(uri)) {
+            case CODE_MOVIE: {
+                int rowId = 0;
+                if (null == selection) return 0;
+
+                String s = (String) values.get(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT);
+                Log.d(TAG,"update " + s);
+                rowId = movieInfoDBHelper.getWritableDatabase().update(
+                        MovieInfoContract.MovieInfos.TABLE_NAME, values,selection, selectionArgs);
+
+                if (rowId != -1) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                return rowId;
+            }
+            default:
+                throw new UnsupportedOperationException("Un know uri :" + uri);
+        }
     }
 
     @Override
@@ -154,11 +189,11 @@ public class MovieProvider extends ContentProvider {
      *
      * @return urimatcher
      */
-    public static UriMatcher buildUriMatcher(){
+    public static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieInfoContract.CONTENT_AUTHORITY;
-        matcher.addURI(authority,MovieInfoContract.PATH_MOVIE,CODE_MOVIE);
-        matcher.addURI(authority,MovieInfoContract.PATH_MOVIE+"/#",CODE_MOVIE_ID);
+        matcher.addURI(authority, MovieInfoContract.PATH_MOVIE, CODE_MOVIE);
+        matcher.addURI(authority, MovieInfoContract.PATH_MOVIE + "/#", CODE_MOVIE_BASE_ID);
         return matcher;
     }
 }
