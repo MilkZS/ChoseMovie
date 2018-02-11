@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 
 public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdapter.MovieTrailersHolder> {
 
+    private String TAG = "MovieTrailersAdapter";
     private ArrayList<Uri> uriArrayList;
     private Context context;
     private final String TRAILER = "Trailer";
@@ -84,6 +86,7 @@ public class MovieTrailersAdapter extends RecyclerView.Adapter<MovieTrailersAdap
 
     public void deliverTrailers(ArrayList<Uri> uriArrayList) {
         this.uriArrayList = uriArrayList;
+        Log.d(TAG,"uriArrayList" + uriArrayList);
         notifyDataSetChanged();
     }
 }
