@@ -40,6 +40,8 @@ public interface BaseDataInfo {
     String MOVIE_EXTRA = "movie extra";
     String MOVIE_PREFERENCE = "Text2";
     String MOVIE_PREFERENCE_MAIN = "Text1";
+    String MOVIE_PREFERENCE_CHILD = "childText";
+
 
     /**  the private api_key of themoviedb.org   */
     String myPrivateKey = "b2cf1b074a9c5fd6be1d9eca9d05ddd2";
