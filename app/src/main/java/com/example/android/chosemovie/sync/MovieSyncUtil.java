@@ -17,12 +17,6 @@ public class MovieSyncUtil {
 
     private static String TAG = "MovieSyncUtil";
     public static int MODE = BaseDataInfo.POPULAR_MODE;
-    public static boolean ifFirstInit;
-
-    private static final int MODE_POPULAR = BaseDataInfo.POPULAR_MODE;
-    private static final int MODE_RATE_VOTE = BaseDataInfo.RATE_DATE_MODE;
-    private static final int MODE_FAVORITE = BaseDataInfo.FAVORITE_MODE;
-
 
     public static void startIntentService(final Context context) {
         Intent intent = new Intent(context, MovieSyncIntentService.class);
@@ -36,18 +30,6 @@ public class MovieSyncUtil {
             return;
         }
         MODE = mode;
-        switch (mode) {
-            case BaseDataInfo.POPULAR_MODE: {
-
-            }
-            break;
-            case BaseDataInfo.RATE_DATE_MODE: {
-            }
-            break;
-            case BaseDataInfo.FAVORITE_MODE: {
-            }
-            break;
-        }
 
         Log.d(TAG, "initialize" + mode);
         Thread syncForFirst = new Thread(new Runnable() {
