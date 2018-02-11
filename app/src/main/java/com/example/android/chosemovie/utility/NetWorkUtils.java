@@ -21,10 +21,10 @@ import java.util.Scanner;
 public class NetWorkUtils {
 
     private final static String TAG = "MetWorkUtils";
-    private final static int POPULAR_MODE = PicRecAdapter.POPULAR_MODE;
-    private final static int RATE_DATA_MODE = PicRecAdapter.RATE_DATE_MODE;
-    private final static int ID_VIDEO = PicRecAdapter.ID_VIDEO;
-    private final static int ID_REVIEWS = PicRecAdapter.ID_REVIEWS;
+    private final static int POPULAR_MODE = BaseDataInfo.POPULAR_MODE;
+    private final static int RATE_DATA_MODE = BaseDataInfo.RATE_DATE_MODE;
+    private final static int ID_MOVIE = BaseDataInfo.ID_MOVIE;
+    private final static int ID_REVIEWS = BaseDataInfo.ID_REVIEWS;
 
     /**
      * build the URL for themoviedb.org
@@ -42,11 +42,11 @@ public class NetWorkUtils {
             case RATE_DATA_MODE:{
                 sBaseSearchQuery = BaseDataInfo.searchQueryTopRateFromDB;
             }break;
-            case ID_VIDEO:{
-                sBaseSearchQuery = sID + BaseDataInfo.VIDEO;
+            case ID_MOVIE:{
+                sBaseSearchQuery = BaseDataInfo.originUrl + sID + BaseDataInfo.VIDEO;
             }break;
             case ID_REVIEWS:{
-                sBaseSearchQuery = sID + BaseDataInfo.REVIEWS;
+                sBaseSearchQuery = BaseDataInfo.originUrl + sID + BaseDataInfo.REVIEWS;
             }break;
         }
 
