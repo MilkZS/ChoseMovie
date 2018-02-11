@@ -26,6 +26,7 @@ import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.data.SQLBaseInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
 import com.example.android.chosemovie.sync.MovieSyncUtil;
+import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 
 public class MainActivity extends AppCompatActivity implements MovieClickHandle, LoaderManager.LoaderCallbacks<Cursor> {
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
     private String MAIN_UI_STAUS = "main_ui_staus";
+
+    private OpenMovieInfoJson openMovieInfoJson;
 
     private final int spanCount = 3;
     private final int POPULAR_MODE = BaseDataInfo.POPULAR_MODE;
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         imageAdapter = new PicRecAdapter(this);
         recyclerView.setAdapter(imageAdapter);
         Log.d(TAG, "start Task");
+        MovieSyncDataTask movieSyncDataTask = new MovieSyncDataTask(openMovieInfoJson,this);
         getSupportLoaderManager().initLoader(initMode, null, this);
         MovieSyncUtil.initialize(this,initMode);
     }
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         Class desClass = ChildActivity.class;
         Intent intent = new Intent(this, desClass);
         intent.setData(uri);
+        intent.putExtra(Intent.EXTRA_TEXT,initMode);
         startActivity(intent);
         //Toast.makeText(this,index+"",Toast.LENGTH_SHORT).show();
         if (DBG) Log.d(TAG,uri.toString());
