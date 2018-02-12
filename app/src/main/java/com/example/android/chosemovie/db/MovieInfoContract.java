@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 
-import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.data.SQLBaseInfo;
 

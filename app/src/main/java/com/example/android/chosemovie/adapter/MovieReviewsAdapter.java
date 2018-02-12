@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.example.android.chosemovie.R;
 import com.example.android.chosemovie.base.MovieReviews;
-import com.example.android.chosemovie.base.MovieSingleInfo;
 
 /**
  * Created by milkdz on 2018/2/1.

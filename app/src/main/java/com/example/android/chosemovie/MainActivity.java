@@ -34,9 +34,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     private boolean DBG = true;
     private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
-    private String MAIN_UI_STAUS = "main_ui_staus";
-
-    private OpenMovieInfoJson openMovieInfoJson;
+    private String MAIN_UI_STATE = "main_ui_state";
 
     private final int spanCount = 3;
     private final int POPULAR_MODE = BaseDataInfo.POPULAR_MODE;
@@ -53,7 +51,6 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //getSupportActionBar().setElevation(0f);
 
         sharedPreferences = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE_MAIN,MODE_PRIVATE);
         recyclerView = findViewById(R.id.recycle_show);
@@ -64,16 +61,15 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         recyclerView.setHasFixedSize(true);
         Log.e(TAG,"onCreate + savedInstanceState :"+savedInstanceState);
         Log.d(TAG,"onCreate + init mode :"+initMode);
-        if(savedInstanceState != null && savedInstanceState.containsKey(MAIN_UI_STAUS)){
-            initMode = savedInstanceState.getInt(MAIN_UI_STAUS);
+        if(savedInstanceState != null && savedInstanceState.containsKey(MAIN_UI_STATE)){
+            initMode = savedInstanceState.getInt(MAIN_UI_STATE);
           //  Toast.makeText(this,initMode,Toast.LENGTH_SHORT).show();
         }else{
-            initMode = sharedPreferences.getInt(MAIN_UI_STAUS,POPULAR_MODE);
+            initMode = sharedPreferences.getInt(MAIN_UI_STATE,POPULAR_MODE);
         }
         imageAdapter = new PicRecAdapter(this);
         recyclerView.setAdapter(imageAdapter);
         Log.d(TAG, "start Task");
-        MovieSyncDataTask movieSyncDataTask = new MovieSyncDataTask(openMovieInfoJson,this);
         getSupportLoaderManager().initLoader(initMode, null, this);
         MovieSyncUtil.initialize(this,initMode);
     }
@@ -164,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
                         select, null, sOrder);
             }
             case RATE_DATA_MODE: {
-                Log.d("test1","RATE--OncreateLoader");
+                Log.d("test1","RATE--onCreateLoader");
                 String select = MovieInfoContract.getSelect(RATE_DATA_MODE);
                 return new CursorLoader(this, movieUri, MovieInfoContract.MAIN_MOVIE_UI,
                         select, null, sOrder);
@@ -200,9 +196,9 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState) {
         Log.d(TAG,"save state " + initMode);
-        savedInstanceState.putInt(MAIN_UI_STAUS,initMode);
+        savedInstanceState.putInt(MAIN_UI_STATE,initMode);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(MAIN_UI_STAUS,initMode);
+        editor.putInt(MAIN_UI_STATE,initMode);
         editor.commit();
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -211,6 +207,6 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         Log.e(TAG,"Restore state");
         super.onRestoreInstanceState(savedInstanceState);
-        initMode = savedInstanceState.getInt(MAIN_UI_STAUS);
+        initMode = savedInstanceState.getInt(MAIN_UI_STATE);
     }
 }

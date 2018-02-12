@@ -24,7 +24,6 @@ import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
 import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
-import com.example.android.chosemovie.sync.MovieSyncTask;
 import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
@@ -47,8 +46,6 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private SharedPreferences sharedPreferencesUI;
-    private SharedPreferences.Editor editorUI;
 
     private ImageView imageView;
     private TextView titleTextView;
@@ -59,9 +56,6 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
     private String Movie_Id;
 
-    private String CHILD_STATE_REVIEW = "_review_";
-    private String CHILD_STATE_TRAILER = "_trailer_";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,10 +63,8 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
         sharedPreferences = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE, MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        sharedPreferencesUI = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE_CHILD,MODE_PRIVATE);
-        editorUI = sharedPreferencesUI.edit();
 
-        Log.e(TAG,"========<<");
+        if (DBG)Log.e(TAG,"onCreate");
 
         progressBar = findViewById(R.id.show_progress_child);
 
@@ -102,18 +94,15 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
         Intent intent = getIntent();
         mUri = intent.getData();
-        Log.e(TAG,"mUri " + mUri);
+        if (DBG) Log.e(TAG,"mUri " + mUri);
         if (mUri == null) {
             throw new NullPointerException("URI for DetailActivity cannot be null");
         }
 
         //if (savedInstanceState == null){
-            getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
+        getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
         //}else {
         //    getSupportLoaderManager().restartLoader(BaseDataInfo.ID_MOVIE,null,this);
-
-
-        Log.e(TAG,"run here");
        // if(intent.hasExtra(Intent.EXTRA_TEXT)){
 //            Log.d(TAG,"initMode"+initMode+"");
 //        new MovieSyncDataTask(openMovieInfoJson,this).execute();
@@ -137,7 +126,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
             editor.putInt(Movie_Id, BaseDataInfo.UN_FAVORITE);
         }
         editor.commit();
-        MovieSyncTask.syncMovie(openMovieInfoJson,this);
+        new MovieSyncDataTask(openMovieInfoJson,this).execute();
     }
 
     @Override
@@ -212,6 +201,11 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
         }
     }
 
+    /**
+     * Get reviews from cursor and set them to the UI
+     *
+     * @param dataCursor row cursor
+     */
     private void setReviews(Cursor dataCursor){
         String reviews = dataCursor.getString(
                 dataCursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_REVIEW));
@@ -229,7 +223,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     }
 
     /**
-     * Get Uri arrayList from cursor
+     * Get Uri arrayList from cursor and set it to the UI
      *
      * @param dataCursor row cursor
      */
@@ -258,8 +252,5 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //(CHILD_STATE_REVIEW,recyclerViewReview);
-        //outState.putString(CHILD_STATE_TRAILER,"");
-        //outState.setClassLoader();
     }
 }

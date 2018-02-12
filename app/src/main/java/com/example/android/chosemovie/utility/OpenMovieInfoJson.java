@@ -7,9 +7,6 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.android.chosemovie.base.MovieInfo;
-import com.example.android.chosemovie.base.MovieReviews;
-import com.example.android.chosemovie.base.MovieTrailers;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
 
@@ -18,10 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 
 /**
  * Created by milkdz on 2018/1/7.
@@ -133,32 +127,6 @@ public class OpenMovieInfoJson {
     }
 
     /**
-     * Get Movie Trailers
-     *
-     * @param jsonString json string of array message
-     * @return MovieTrailers object
-     * @throws JSONException
-     */
-    private String getMovieTrailerss(String jsonString) throws JSONException {
-
-        if (DBG) Log.d(TAG,"Movie Trailers is " + jsonString);
-        JSONObject jsonObject = new JSONObject(jsonString);
-        JSONArray jsonArray = jsonObject.getJSONArray(QUERY);
-        int length = jsonArray.length();
-        JSONObject jsonSingleObject;
-        String trailes = "";
-        for (int i = 0; i < length; i++) {
-            jsonSingleObject = jsonArray.getJSONObject(i);
-            String v = jsonSingleObject.getString(VIDEO_TRAILERS_KEY);
-            Uri uri = NetWorkUtils.buildUrlForYoutube(v);
-            trailes = trailes + ";" + uri;
-        }
-        return trailes;
-    }
-
-
-
-    /**
      * Get object of MoviesTrailers
      *
      * @param movieId movie id
@@ -170,110 +138,24 @@ public class OpenMovieInfoJson {
         URL url = NetWorkUtils.buildUrlForDifSort(BaseDataInfo.ID_MOVIE, movieId);
         try {
             String jsonData = NetWorkUtils.getResponseFromHttpUrl(url);
-            String trailersArr = getMovieTrailerss(jsonData);
-            return trailersArr;
+            if (DBG) Log.d(TAG,"Movie Trailers is " + jsonData);
+            JSONObject jsonObject = new JSONObject(jsonData);
+            JSONArray jsonArray = jsonObject.getJSONArray(QUERY);
+            int length = jsonArray.length();
+            JSONObject jsonSingleObject;
+            String trailers = "";
+            for (int i = 0; i < length; i++) {
+                jsonSingleObject = jsonArray.getJSONObject(i);
+                String v = jsonSingleObject.getString(VIDEO_TRAILERS_KEY);
+                Uri uri = NetWorkUtils.buildUrlForYoutube(v);
+                trailers = trailers + ";" + uri;
+            }
+            return trailers;
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-
-    /**
-
-     * Get detail messages about Reviews
-
-     *
-
-     * @param jsonString json string of detail message
-
-     * @return object MovieInfo
-
-     * @throws JSONException
-
-     */
-
-    public MovieReviews[] getMovieReviews(String jsonString) throws JSONException {
-
-
-
-        if (DBG) Log.d(TAG, "++++++jsonData++++++++ === > " + jsonString);
-        MovieReviews movieReviews;
-        MovieReviews[] movieReviewsArr;
-
-        JSONObject jsonObject = new JSONObject(jsonString);
-
-        JSONArray jsonArray = jsonObject.getJSONArray(QUERY);
-
-        movieReviewsArr = new MovieReviews[jsonArray.length()];
-
-        JSONObject jsonSingleObject;
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-
-            jsonSingleObject = jsonArray.getJSONObject(i);
-
-            String author = jsonSingleObject.getString(REVIEWS_AUTHOR);
-
-            String content = jsonSingleObject.getString(REVIEWS_CONTENT);
-
-            movieReviews = new MovieReviews(author, content);
-
-            movieReviewsArr[i] = movieReviews;
-
-        }
-
-        return movieReviewsArr;
-
-    }
-
-
-
-    /**
-
-     * Get Movie Trailers
-
-     *
-
-     * @param jsonString json string of array message
-
-     * @return MovieTrailers object
-
-     * @throws JSONException
-
-     */
-
-    public MovieTrailers getMovieTrailers(String jsonString) throws JSONException {
-
-
-
-        if (DBG) Log.d(TAG,"Movie Trailers is " + jsonString);
-
-        JSONObject jsonObject = new JSONObject(jsonString);
-
-        JSONArray jsonArray = jsonObject.getJSONArray(QUERY);
-
-        int length = jsonArray.length();
-
-        ArrayList<Uri> arrayList = new ArrayList<>();
-
-        JSONObject jsonSingleObject;
-
-        for (int i = 0; i < length; i++) {
-
-            jsonSingleObject = jsonArray.getJSONObject(i);
-
-            String v = jsonSingleObject.getString(VIDEO_TRAILERS_KEY);
-
-            Uri uri = NetWorkUtils.buildUrlForYoutube(v);
-
-            arrayList.add(i, uri);
-
-        }
-
-        return new MovieTrailers(arrayList);
-
     }
 }

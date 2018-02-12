@@ -9,20 +9,19 @@ public interface BaseDataInfo {
     String baseUrl = "http://image.tmdb.org/t/p/w185/";
     String originUrl = "http://api.themoviedb.org/3/movie/";
 
+    String POPULAR = "popular";
     String TOP_RATE = "top_rated";
 
     //the url of themoviedb search
-    String searchQueryPopularFromDB = originUrl + "popular";
-    String searchQueryTopRateFromDB = originUrl + "top_rated";
+    String searchQueryPopularFromDB = originUrl + POPULAR;
+    String searchQueryTopRateFromDB = originUrl + TOP_RATE;
     String apiKey = "api_key";
     String REVIEWS = "/reviews";
-    String CLASS_PASS = "MovieInfo";
     String VIDEO = "/videos";
 
     /** youtube */
     String youtubeBaseUrl = "https://www.youtube.com/watch";
     String youtubeVideo = "v";
-
 
     int POPULAR_MODE = 1;
     int RATE_DATE_MODE = 2;
@@ -37,12 +36,10 @@ public interface BaseDataInfo {
     int ID_MOVIE = 10;
     int ID_REVIEWS = 11;
 
-    String MOVIE_EXTRA = "movie extra";
     String MOVIE_PREFERENCE = "Text2";
     String MOVIE_PREFERENCE_MAIN = "Text1";
     String MOVIE_PREFERENCE_CHILD = "childText";
 
-
     /**  the private api_key of themoviedb.org   */
-    String myPrivateKey = "";
+    String myPrivateKey = "b2cf1b074a9c5fd6be1d9eca9d05ddd2";
 }

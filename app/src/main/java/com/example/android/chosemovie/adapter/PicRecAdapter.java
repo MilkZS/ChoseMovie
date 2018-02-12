@@ -2,7 +2,6 @@ package com.example.android.chosemovie.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.http.SslCertificate;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.android.chosemovie.R;
-import com.example.android.chosemovie.base.MovieInfo;
 import com.example.android.chosemovie.common.MovieClickHandle;
 import com.example.android.chosemovie.db.MovieInfoContract;
 import com.squareup.picasso.Picasso;
