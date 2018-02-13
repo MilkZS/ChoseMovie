@@ -153,12 +153,9 @@ public class MovieProvider extends ContentProvider {
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
                       @Nullable String[] selectionArgs) {
         switch (uriMatcher.match(uri)) {
-            case CODE_MOVIE: {
+            case CODE_MOVIE_BASE_ID: {
                 int rowId = 0;
                 if (null == selection) return 0;
-
-                String s = (String) values.get(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT);
-                Log.d(TAG,"update " + s);
                 rowId = movieInfoDBHelper.getWritableDatabase().update(
                         MovieInfoContract.MovieInfos.TABLE_NAME, values,selection, selectionArgs);
 
