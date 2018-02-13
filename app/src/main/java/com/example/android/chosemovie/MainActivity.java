@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.preference.Preference;
 import android.support.v4.app.LoaderManager;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -29,12 +31,15 @@ import com.example.android.chosemovie.sync.MovieSyncUtil;
 import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 
+
+
 public class MainActivity extends AppCompatActivity implements MovieClickHandle, LoaderManager.LoaderCallbacks<Cursor> {
 
     private boolean DBG = true;
     private String TAG = "ChoseMovie-MainActivity";
     private RecyclerView recyclerView;
     private String MAIN_UI_STATE = "main_ui_state";
+    private String MAIN_UI_POSITION = "position";
 
     private final int spanCount = 3;
     private final int POPULAR_MODE = BaseDataInfo.POPULAR_MODE;
@@ -42,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     private final int FAVORITE_MODE = BaseDataInfo.FAVORITE_MODE;
     private PicRecAdapter imageAdapter;
     private ProgressBar progressBar;
-    private int initMode;
+    private int initMode = 1;
     private int mPosition = RecyclerView.NO_POSITION;
 
     SharedPreferences sharedPreferences;
@@ -61,11 +66,17 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         recyclerView.setHasFixedSize(true);
         Log.e(TAG,"onCreate + savedInstanceState :"+savedInstanceState);
         Log.d(TAG,"onCreate + init mode :"+initMode);
-        if(savedInstanceState != null && savedInstanceState.containsKey(MAIN_UI_STATE)){
-            initMode = savedInstanceState.getInt(MAIN_UI_STATE);
-          //  Toast.makeText(this,initMode,Toast.LENGTH_SHORT).show();
-        }else{
-            initMode = sharedPreferences.getInt(MAIN_UI_STATE,POPULAR_MODE);
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(MAIN_UI_STATE)){
+                initMode = savedInstanceState.getInt(MAIN_UI_STATE);
+                //  Toast.makeText(this,initMode,Toast.LENGTH_SHORT).show();
+            }else{
+                initMode = sharedPreferences.getInt(MAIN_UI_STATE,POPULAR_MODE);
+            }
+            if(savedInstanceState.containsKey(MAIN_UI_POSITION)){
+                mPosition = savedInstanceState.getInt(MAIN_UI_POSITION);
+                Log.d(TAG,"onCreate -- mPosition : " + mPosition);
+            }
         }
         imageAdapter = new PicRecAdapter(this);
         recyclerView.setAdapter(imageAdapter);
@@ -83,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
      * @param choseMode sort mode
      */
     public void refreshMode(int choseMode) {
+        mPosition = RecyclerView.NO_POSITION;
         switch (choseMode) {
             case POPULAR_MODE: {
                 initMode = POPULAR_MODE;
@@ -110,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
 
     @Override
     public void onClick(String index) {
+        mPosition = Integer.parseInt(index);
         Uri uri = MovieInfoContract.buildContentForMovieDetail(index);
         Class desClass = ChildActivity.class;
         Intent intent = new Intent(this, desClass);
@@ -141,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
             }
             break;
             case (R.id.tv_sort_by_favorite):{
+                ///new MovieSyncDataTask(OpenMovieInfoJson.getInstance(),this);
                 refreshMode(FAVORITE_MODE);
             }
             break;
@@ -179,8 +193,11 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         imageAdapter.swapCursor(data);
-        if (mPosition == RecyclerView.NO_POSITION) {
-            mPosition = 0;
+        //mPosition = loader.getId();
+        Log.d(TAG,"load position : " + mPosition);
+        //View view = View.inflate(this,R.layout.image_show,null);
+       if (mPosition == RecyclerView.NO_POSITION) {
+            mPosition = 0;//recyclerView.getChildAdapterPosition(view);
         }
         recyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) {
@@ -201,12 +218,26 @@ public class MainActivity extends AppCompatActivity implements MovieClickHandle,
         editor.putInt(MAIN_UI_STATE,initMode);
         editor.commit();
         super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putInt(MAIN_UI_POSITION,((GridLayoutManager)recyclerView.getLayoutManager()).findLastVisibleItemPosition());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        Log.e(TAG,"Restore state");
         super.onRestoreInstanceState(savedInstanceState);
-        initMode = savedInstanceState.getInt(MAIN_UI_STATE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mPosition = ((GridLayoutManager)recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+        Log.d(TAG,"onPause --  + mPosition : " + mPosition);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG,"onResume--mPosition : " + mPosition);
+        recyclerView.getLayoutManager().scrollToPosition(mPosition);
     }
 }
