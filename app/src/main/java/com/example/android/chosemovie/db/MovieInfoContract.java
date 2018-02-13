@@ -46,6 +46,7 @@ public class MovieInfoContract {
     public static final String[] CHILD_MOVIE_UI = new String[]{
             MovieInfos.COLUMN_MOVIE_ID,
             MovieInfos.COLUMN_MOVIE_BACK_IMAGE,
+            MovieInfos.COLUMN_MOVIE_SORT,
             MovieInfos.COLUMN_MOVIE_DATE,
             MovieInfos.COLUMN_MOVIE_NAME,
             MovieInfos.COLUMN_MOVIE_VOTE,
