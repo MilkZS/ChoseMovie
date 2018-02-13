@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,8 +26,6 @@ import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
 import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
-import com.example.android.chosemovie.db.MovieInfoDBHelper;
-import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +41,6 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     private RecyclerView recyclerViewReview;
     private MovieTrailersAdapter movieTrailersAdapter;
     private RecyclerView recyclerViewTrailer;
-    private ProgressBar progressBar;
 
     private Uri mUri;
     private int ifFavorite;
@@ -58,7 +54,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     private TextView voteTextView;
     private TextView userViewTextView;
     private Button buttonFavorite;
-private ContentResolver contentResolver;
+    private ContentResolver contentResolver;
     private String Movie_Id;
 
     @Override
@@ -71,8 +67,6 @@ private ContentResolver contentResolver;
         editor = sharedPreferences.edit();
 
         if (DBG)Log.e(TAG,"onCreate");
-
-        progressBar = findViewById(R.id.show_progress_child);
 
         imageView = findViewById(R.id.movie_detail_image);
         titleTextView = findViewById(R.id.movie_detail_title);
@@ -96,8 +90,6 @@ private ContentResolver contentResolver;
         recyclerViewTrailer.setHasFixedSize(true);
         recyclerViewTrailer.setAdapter(movieTrailersAdapter);
 
-        progressBar = findViewById(R.id.show_progress_child);
-
         Intent intent = getIntent();
         mUri = intent.getData();
         if (DBG) Log.e(TAG,"mUri " + mUri);
@@ -105,19 +97,10 @@ private ContentResolver contentResolver;
             throw new NullPointerException("URI for DetailActivity cannot be null");
         }
 
-        //if (savedInstanceState == null){
         getSupportLoaderManager().initLoader(BaseDataInfo.ID_MOVIE, null, this);
-        //}else {
-        //    getSupportLoaderManager().restartLoader(BaseDataInfo.ID_MOVIE,null,this);
-       // if(intent.hasExtra(Intent.EXTRA_TEXT)){
-//            Log.d(TAG,"initMode"+initMode+"");
-//        new MovieSyncDataTask(openMovieInfoJson,this).execute();
-       // }
     }
 
 
-    private Cursor data;
-    //private MovieInfoDBHelper movieInfoDBHelper = new MovieInfoDBHelper(this);
 
     /**
      * when button is clicked , change the preference
@@ -128,7 +111,6 @@ private ContentResolver contentResolver;
         Log.d(TAG,"markMovie");
         String buttonFavoriteText = (String) buttonFavorite.getText();
         ContentValues contentValues = new ContentValues();
-        //SQLiteDatabase db = movieInfoDBHelper.getWritableDatabase();
         int newFavorite = 0;
         if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite))) {
             buttonFavorite.setText(getResources().getString(R.string.movie_favorite_fix));
@@ -145,7 +127,6 @@ private ContentResolver contentResolver;
         }
         editor.commit();
         contentValues.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT,newFavorite);
-
         contentResolver.update(mUri,contentValues, MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID + "=?",new String[]{Movie_Id});
     }
 

@@ -25,8 +25,6 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
     private Cursor mCursor;
     private Context context;
 
-    private int position;
-
     MovieClickHandle movieClickHandle;
 
     public PicRecAdapter(MovieClickHandle movieClickHandle){

@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.PersistableBundle;
-import android.preference.Preference;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,9 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.android.chosemovie.adapter.PicRecAdapter;
 import com.example.android.chosemovie.common.MovieClickHandle;
@@ -28,10 +23,6 @@ import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.data.SQLBaseInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
 import com.example.android.chosemovie.sync.MovieSyncUtil;
-import com.example.android.chosemovie.utility.MovieSyncDataTask;
-import com.example.android.chosemovie.utility.OpenMovieInfoJson;
-
-
 
 public class MainActivity extends AppCompatActivity implements MovieClickHandle, LoaderManager.LoaderCallbacks<Cursor> {
 
