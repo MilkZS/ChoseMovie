@@ -1,8 +1,11 @@
 package com.example.android.chosemovie;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -24,6 +27,7 @@ import com.example.android.chosemovie.adapter.MovieTrailersAdapter;
 import com.example.android.chosemovie.base.MovieReviews;
 import com.example.android.chosemovie.data.BaseDataInfo;
 import com.example.android.chosemovie.db.MovieInfoContract;
+import com.example.android.chosemovie.db.MovieInfoDBHelper;
 import com.example.android.chosemovie.utility.MovieSyncDataTask;
 import com.example.android.chosemovie.utility.OpenMovieInfoJson;
 import com.squareup.picasso.Picasso;
@@ -43,6 +47,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     private ProgressBar progressBar;
 
     private Uri mUri;
+    private int ifFavorite;
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -53,7 +58,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     private TextView voteTextView;
     private TextView userViewTextView;
     private Button buttonFavorite;
-
+private ContentResolver contentResolver;
     private String Movie_Id;
 
     @Override
@@ -61,6 +66,7 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_child);
 
+        contentResolver = getContentResolver();
         sharedPreferences = getSharedPreferences(BaseDataInfo.MOVIE_PREFERENCE, MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -110,6 +116,8 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
     }
 
 
+    private Cursor data;
+    //private MovieInfoDBHelper movieInfoDBHelper = new MovieInfoDBHelper(this);
 
     /**
      * when button is clicked , change the preference
@@ -117,16 +125,28 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
      * @param view button view
      */
     public void markMovie(View view) {
+        Log.d(TAG,"markMovie");
         String buttonFavoriteText = (String) buttonFavorite.getText();
+        ContentValues contentValues = new ContentValues();
+        //SQLiteDatabase db = movieInfoDBHelper.getWritableDatabase();
+        int newFavorite = 0;
         if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite))) {
             buttonFavorite.setText(getResources().getString(R.string.movie_favorite_fix));
             editor.putInt(Movie_Id, BaseDataInfo.FAVORITE_MODE);
+            Log.d(TAG,"ifFavorite -- 收藏 : " + ifFavorite);
+            newFavorite = ifFavorite + BaseDataInfo.FAVORITE_MODE;
+            Log.d(TAG,"newFavorite -- 收藏 : " + newFavorite);
         } else if (buttonFavoriteText.equals(getResources().getString(R.string.movie_favorite_fix))) {
             buttonFavorite.setText(getResources().getString(R.string.movie_favorite));
             editor.putInt(Movie_Id, BaseDataInfo.UN_FAVORITE);
+            Log.d(TAG,"ifFavorite -- 取消收藏 : " + ifFavorite);
+            newFavorite = ifFavorite - BaseDataInfo.FAVORITE_MODE;
+            Log.d(TAG,"newFavorite -- 取消收藏 : " + newFavorite);
         }
         editor.commit();
-        new MovieSyncDataTask(openMovieInfoJson,this).execute();
+        contentValues.put(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT,newFavorite);
+
+        contentResolver.update(mUri,contentValues, MovieInfoContract.MovieInfos.COLUMN_MOVIE_ID + "=?",new String[]{Movie_Id});
     }
 
     @Override
@@ -142,12 +162,23 @@ public class ChildActivity extends AppCompatActivity implements LoaderManager.Lo
 
     @Override
     public void onLoadFinished(Loader loader, Cursor data) {
+
         if (data != null && data.moveToFirst()) {
+            getFavorite(data);
             setInfoIntoUI(data);
             setTrailers(data);
             setReviews(data);
         }
     }
+
+    private void getFavorite(Cursor cursor){
+        Log.d(TAG,"getFavorite -- ifFavorite" + cursor.getString(
+                cursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT)));
+        ifFavorite = Integer.parseInt(cursor.getString(
+                cursor.getColumnIndex(MovieInfoContract.MovieInfos.COLUMN_MOVIE_SORT)));
+        Log.d(TAG,"getFavorite -- ifFavorite : " + ifFavorite);
+    }
+
 
     /**
      * Set info into the UI
