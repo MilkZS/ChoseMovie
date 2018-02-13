@@ -41,5 +41,5 @@ public interface BaseDataInfo {
     String MOVIE_PREFERENCE_CHILD = "childText";
 
     /**  the private api_key of themoviedb.org   */
-    String myPrivateKey = "b2cf1b074a9c5fd6be1d9eca9d05ddd2";
+    String myPrivateKey = "";
 }
