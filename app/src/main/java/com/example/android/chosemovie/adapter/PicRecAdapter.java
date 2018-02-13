@@ -25,6 +25,8 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
     private Cursor mCursor;
     private Context context;
 
+    private int position;
+
     MovieClickHandle movieClickHandle;
 
     public PicRecAdapter(MovieClickHandle movieClickHandle){
@@ -50,6 +52,10 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
         Picasso.with(context).load(sPath).into(holder.listItem);
     }
 
+    public int getPosition(){
+        return getPosition();
+    }
+
     public void swapCursor(Cursor cursor){
         mCursor = cursor;
         notifyDataSetChanged();
@@ -71,6 +77,7 @@ public class PicRecAdapter extends RecyclerView.Adapter<PicRecAdapter.PictureOnV
             listItem = itemView.findViewById(R.id.image_show_movie);
             listItem.setOnClickListener(this);
         }
+
 
         @Override
         public void onClick(View v) {
